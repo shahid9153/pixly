@@ -1,0 +1,16 @@
+[project]
+name = "hacktober-fest"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "customtkinter>=5.2.2",
+    "fastapi>=0.117.1",
+    "keyboard>=0.13.5",
+    "requests>=2.32.5",
+    "uvicorn>=0.37.0",
+    "google-generativeai>=0.8.3",
+    "pillow>=10.0.0",
+    
+]
