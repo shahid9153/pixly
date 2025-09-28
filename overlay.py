@@ -3,6 +3,10 @@ import customtkinter as ctk
 import requests
 import keyboard
 import threading
+import tkinter as tk
+from tkinter import filedialog
+import os
+import json
 
 class ChatWindow(ctk.CTkFrame):
     def __init__(self, parent):
@@ -126,6 +130,332 @@ class ChatWindow(ctk.CTkFrame):
         if hasattr(self.master.master, "show_buttons"):
             self.master.master.show_buttons()
 
+class SettingsWindow(ctk.CTkFrame):
+    def __init__(self, parent):
+        super().__init__(parent)
+        
+        # Settings title
+        self.settings_title = ctk.CTkLabel(
+            self,
+            text="Screenshot Settings",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color=("gray20", "gray80")
+        )
+        self.settings_title.pack(pady=(10, 20))
+        
+        # Settings container
+        self.settings_container = ctk.CTkScrollableFrame(self)
+        self.settings_container.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+        
+        # Load current settings
+        self.settings = self.load_settings()
+        
+        # Screenshot toggle
+        self.toggle_frame = ctk.CTkFrame(self.settings_container)
+        self.toggle_frame.pack(fill="x", pady=5)
+        
+        self.toggle_label = ctk.CTkLabel(
+            self.toggle_frame,
+            text="Enable Screenshot Capture",
+            font=ctk.CTkFont(size=14, weight="bold")
+        )
+        self.toggle_label.pack(side="left", padx=10, pady=10)
+        
+        self.toggle_switch = ctk.CTkSwitch(
+            self.toggle_frame,
+            text="",
+            command=self.toggle_screenshot_capture
+        )
+        self.toggle_switch.pack(side="right", padx=10, pady=10)
+        self.toggle_switch.select() if self.settings.get('enabled', False) else None
+        
+        # Interval setting
+        self.interval_frame = ctk.CTkFrame(self.settings_container)
+        self.interval_frame.pack(fill="x", pady=5)
+        
+        self.interval_label = ctk.CTkLabel(
+            self.interval_frame,
+            text="Capture Interval (seconds)",
+            font=ctk.CTkFont(size=14, weight="bold")
+        )
+        self.interval_label.pack(side="left", padx=10, pady=10)
+        
+        self.interval_entry = ctk.CTkEntry(
+            self.interval_frame,
+            placeholder_text="30",
+            width=100
+        )
+        self.interval_entry.pack(side="right", padx=10, pady=10)
+        self.interval_entry.insert(0, str(self.settings.get('interval', 30)))
+        
+        # Folder selection
+        self.folder_frame = ctk.CTkFrame(self.settings_container)
+        self.folder_frame.pack(fill="x", pady=5)
+        
+        self.folder_label = ctk.CTkLabel(
+            self.folder_frame,
+            text="Screenshot Folder",
+            font=ctk.CTkFont(size=14, weight="bold")
+        )
+        self.folder_label.pack(side="left", padx=10, pady=10)
+        
+        self.folder_button = ctk.CTkButton(
+            self.folder_frame,
+            text="Select Folder",
+            command=self.select_folder,
+            width=120
+        )
+        self.folder_button.pack(side="right", padx=10, pady=10)
+        
+        self.folder_path_label = ctk.CTkLabel(
+            self.folder_frame,
+            text=self.settings.get('folder', 'Default: ./screenshots'),
+            font=ctk.CTkFont(size=10),
+            text_color=("gray50", "gray50")
+        )
+        self.folder_path_label.pack(side="right", padx=10, pady=5)
+        
+        # Manual view button
+        self.view_frame = ctk.CTkFrame(self.settings_container)
+        self.view_frame.pack(fill="x", pady=5)
+        
+        self.view_button = ctk.CTkButton(
+            self.view_frame,
+            text="View Screenshots",
+            command=self.view_screenshots,
+            height=40,
+            fg_color="purple"
+        )
+        self.view_button.pack(fill="x", padx=10, pady=10)
+        
+        # Save settings button
+        self.save_frame = ctk.CTkFrame(self.settings_container)
+        self.save_frame.pack(fill="x", pady=5)
+        
+        self.save_button = ctk.CTkButton(
+            self.save_frame,
+            text="Save Settings",
+            command=self.save_settings,
+            height=40,
+            fg_color="green"
+        )
+        self.save_button.pack(fill="x", padx=10, pady=10)
+        
+        # Back button
+        self.back_button = ctk.CTkButton(
+            self,
+            text="← Back to Menu",
+            command=self.return_to_menu,
+            height=30,
+            corner_radius=8,
+            fg_color="transparent",
+            text_color=("gray40", "gray60"),
+            hover_color=("gray75", "gray25")
+        )
+        self.back_button.pack(padx=10, pady=5, anchor="w")
+    
+    def load_settings(self):
+        """Load settings from file."""
+        settings_file = "screenshot_settings.json"
+        default_settings = {
+            'enabled': False,
+            'interval': 30,
+            'folder': './screenshots'
+        }
+        
+        if os.path.exists(settings_file):
+            try:
+                with open(settings_file, 'r') as f:
+                    return json.load(f)
+            except:
+                return default_settings
+        return default_settings
+    
+    def save_settings(self):
+        """Save settings to file."""
+        settings_file = "screenshot_settings.json"
+        
+        # Get current settings from UI
+        self.settings['enabled'] = self.toggle_switch.get() == 1
+        self.settings['interval'] = int(self.interval_entry.get() or 30)
+        
+        # Save to file
+        with open(settings_file, 'w') as f:
+            json.dump(self.settings, f, indent=2)
+        
+        # Apply settings
+        self.apply_settings()
+        
+        # Show confirmation
+        self.show_message("Settings saved successfully!")
+    
+    def apply_settings(self):
+        """Apply settings to the screenshot system."""
+        try:
+            if self.settings['enabled']:
+                # Start screenshot capture
+                response = requests.post(
+                    "http://127.0.0.1:8000/screenshots/start",
+                    params={"interval": self.settings['interval']}
+                )
+                if response.status_code == 200:
+                    print("Screenshot capture started")
+                else:
+                    print("Failed to start screenshot capture")
+            else:
+                # Stop screenshot capture
+                response = requests.post("http://127.0.0.1:8000/screenshots/stop")
+                if response.status_code == 200:
+                    print("Screenshot capture stopped")
+                else:
+                    print("Failed to stop screenshot capture")
+        except Exception as e:
+            print(f"Error applying settings: {e}")
+    
+    def toggle_screenshot_capture(self):
+        """Toggle screenshot capture on/off."""
+        self.settings['enabled'] = self.toggle_switch.get() == 1
+        self.apply_settings()
+    
+    def select_folder(self):
+        """Select folder for screenshots."""
+        folder = filedialog.askdirectory()
+        if folder:
+            self.settings['folder'] = folder
+            self.folder_path_label.configure(text=folder)
+    
+    def view_screenshots(self):
+        """Open screenshot viewer window."""
+        try:
+            # Get recent screenshots
+            response = requests.get("http://127.0.0.1:8000/screenshots/recent", params={"limit": 20})
+            if response.status_code == 200:
+                screenshots = response.json()['screenshots']
+                self.open_screenshot_viewer(screenshots)
+            else:
+                self.show_message("Failed to load screenshots")
+        except Exception as e:
+            self.show_message(f"Error loading screenshots: {str(e)}")
+    
+    def open_screenshot_viewer(self, screenshots):
+        """Open a new window to view screenshots."""
+        viewer = ScreenshotViewer(self, screenshots)
+        viewer.lift()
+        viewer.focus()
+    
+    def show_message(self, message):
+        """Show a temporary message."""
+        # Create a temporary label for the message
+        msg_label = ctk.CTkLabel(
+            self,
+            text=message,
+            font=ctk.CTkFont(size=12),
+            fg_color=("green", "darkgreen"),
+            corner_radius=8
+        )
+        msg_label.pack(pady=5)
+        
+        # Remove after 3 seconds
+        self.after(3000, lambda: msg_label.destroy())
+    
+    def return_to_menu(self):
+        if hasattr(self.master.master, "show_buttons"):
+            self.master.master.show_buttons()
+
+class ScreenshotViewer(ctk.CTkToplevel):
+    def __init__(self, parent, screenshots):
+        super().__init__(parent)
+        
+        self.title("Screenshot Viewer")
+        self.geometry("800x600")
+        
+        # Title
+        title_label = ctk.CTkLabel(
+            self,
+            text="Screenshot Gallery",
+            font=ctk.CTkFont(size=18, weight="bold")
+        )
+        title_label.pack(pady=10)
+        
+        # Screenshot list
+        self.screenshot_list = ctk.CTkScrollableFrame(self)
+        self.screenshot_list.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        # Display screenshots
+        for i, screenshot in enumerate(screenshots):
+            self.create_screenshot_item(screenshot, i)
+    
+    def create_screenshot_item(self, screenshot, index):
+        """Create a screenshot item in the viewer."""
+        item_frame = ctk.CTkFrame(self.screenshot_list)
+        item_frame.pack(fill="x", pady=5)
+        
+        # Screenshot info
+        info_text = f"ID: {screenshot[0]} | App: {screenshot[2]} | Time: {screenshot[1]}"
+        info_label = ctk.CTkLabel(
+            item_frame,
+            text=info_text,
+            font=ctk.CTkFont(size=12)
+        )
+        info_label.pack(side="left", padx=10, pady=10)
+        
+        # View button
+        view_btn = ctk.CTkButton(
+            item_frame,
+            text="View",
+            command=lambda: self.view_screenshot(screenshot[0]),
+            width=80
+        )
+        view_btn.pack(side="right", padx=10, pady=10)
+    
+    def view_screenshot(self, screenshot_id):
+        """View a specific screenshot in a new window."""
+        try:
+            # Get screenshot data
+            response = requests.get(f"http://127.0.0.1:8000/screenshots/{screenshot_id}")
+            if response.status_code == 200:
+                data = response.json()['data']
+                self.open_image_viewer(data, screenshot_id)
+            else:
+                print("Failed to load screenshot")
+        except Exception as e:
+            print(f"Error loading screenshot: {e}")
+    
+    def open_image_viewer(self, image_data, screenshot_id):
+        """Open a new window to view the actual image."""
+        import base64
+        from PIL import Image, ImageTk
+        import io
+        
+        # Create new window
+        image_window = ctk.CTkToplevel(self)
+        image_window.title(f"Screenshot {screenshot_id}")
+        image_window.geometry("1000x700")
+        
+        # Decode image data
+        try:
+            image_bytes = base64.b64decode(image_data)
+            image = Image.open(io.BytesIO(image_bytes))
+            
+            # Resize image to fit window
+            image.thumbnail((900, 600), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(image)
+            
+            # Display image
+            image_label = tk.Label(image_window, image=photo)
+            image_label.pack(pady=10)
+            
+            # Keep reference to prevent garbage collection
+            image_label.image = photo
+            
+        except Exception as e:
+            error_label = ctk.CTkLabel(
+                image_window,
+                text=f"Error displaying image: {str(e)}",
+                font=ctk.CTkFont(size=14)
+            )
+            error_label.pack(pady=50)
+
 class Overlay(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -199,6 +529,9 @@ class Overlay(ctk.CTk):
         # Chat window (initially hidden)
         self.chat_window = ChatWindow(self.content_frame)
         
+        # Settings window (initially hidden)
+        self.settings_window = SettingsWindow(self.content_frame)
+        
         # Buttons container
         self.buttons_frame = ctk.CTkFrame(self.content_frame)
         self.buttons_frame.pack(fill="both", expand=True)
@@ -209,7 +542,7 @@ class Overlay(ctk.CTk):
             self.toggle_chat_window,
             "blue"
         )
-        self.button2 = self.create_button("Button 2", lambda: None, "green")
+        self.button2 = self.create_button("Settings", self.toggle_settings_window, "green")
         self.button3 = self.create_button("Button 3", lambda: None, "orange")
         self.button4 = self.create_button("Button 4", lambda: None, "purple")
         
@@ -299,10 +632,28 @@ class Overlay(ctk.CTk):
             self.show_buttons()
         else:
             self.show_chat()
+    
+    def toggle_settings_window(self):
+        if self.settings_window.winfo_viewable():
+            self.show_buttons()
+        else:
+            self.show_settings()
 
     def show_chat(self):
         self.buttons_frame.pack_forget()
+        self.settings_window.pack_forget()
         self.chat_window.pack(fill="both", expand=True)
+        # Update header button to back button
+        self.header_button.configure(
+            text="←",
+            command=self.show_buttons,
+            hover_color=("gray50", "gray50")
+        )
+
+    def show_settings(self):
+        self.buttons_frame.pack_forget()
+        self.chat_window.pack_forget()
+        self.settings_window.pack(fill="both", expand=True)
         # Update header button to back button
         self.header_button.configure(
             text="←",
@@ -312,6 +663,7 @@ class Overlay(ctk.CTk):
 
     def show_buttons(self):
         self.chat_window.pack_forget()
+        self.settings_window.pack_forget()
         self.buttons_frame.pack(fill="both", expand=True)
         for btn in [self.chat_button, self.button2, self.button3, self.button4]:
             btn.pack(pady=5, padx=20, fill="x")
