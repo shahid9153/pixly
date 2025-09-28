@@ -12,9 +12,31 @@ load_dotenv()
 genai.configure(api_key=os.getenv('GOOGLE_API_KEY'),)
 model = genai.GenerativeModel(model_name="gemini-2.5-flash-lite",system_instruction=system_prompt)
 
-async def chat_with_gemini(message: str):
+async def chat_with_gemini(message: str, image_data: str = None):
     try:
-        # Check if user is asking about screenshots
+        # If image data is provided, use vision capabilities
+        if image_data:
+            import PIL.Image
+            import io
+            
+            # Decode base64 image
+            image_bytes = base64.b64decode(image_data)
+            image = PIL.Image.open(io.BytesIO(image_bytes))
+            
+            # Enhanced message for image analysis
+            enhanced_message = f"""
+            {message}
+            
+            LIVE SCREENSHOT PROVIDED: I can see a screenshot that the user just captured. 
+            Please analyze this image in the context of gaming and provide specific, actionable advice based on what you can see.
+            Focus on game mechanics, strategies, UI elements, or any gaming-related aspects visible in the screenshot.
+            """
+            
+            # Generate content with image
+            response = model.generate_content([enhanced_message, image])
+            return {"response": response.text}
+        
+        # Check if user is asking about screenshots (existing functionality)
         screenshot_keywords = ['screenshot', 'screen', 'capture', 'git', 'visual', 'see', 'show me']
         if any(keyword in message.lower() for keyword in screenshot_keywords):
             # Get recent screenshots

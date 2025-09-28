@@ -40,17 +40,34 @@ class ChatWindow(ctk.CTkFrame):
         # Message input
         self.message_input = ctk.CTkEntry(
             self.bottom_frame,
-            placeholder_text="Type your message here...",
+            placeholder_text="Type your message or screenshot analysis prompt...",
             height=40,
             font=ctk.CTkFont(size=12)
         )
         self.message_input.pack(side="left", fill="x", expand=True, padx=(0, 10))
         
+        # Screenshot button
+        self.screenshot_button = ctk.CTkButton(
+            self.bottom_frame,
+            text="📷",
+            width=50,
+            height=40,
+            font=ctk.CTkFont(size=16),
+            command=self.send_screenshot_message,
+            fg_color="#4467C4",
+            hover_color="#365A9D"
+        )
+        self.screenshot_button.pack(side="right", padx=(0, 5))
+        
+        # Add tooltip-like behavior for screenshot button
+        self.screenshot_button.bind("<Enter>", self.on_screenshot_hover)
+        self.screenshot_button.bind("<Leave>", self.on_screenshot_leave)
+        
         # Send button
         self.send_button = ctk.CTkButton(
             self.bottom_frame,
             text="Send",
-            width=100,
+            width=80,
             height=40,
             font=ctk.CTkFont(size=12, weight="bold"),
             command=self.send_message
@@ -73,8 +90,51 @@ class ChatWindow(ctk.CTkFrame):
         # Bind Enter key
         self.message_input.bind("<Return>", lambda e: self.send_message())
         
+        # Create quick prompt buttons
+        self.quick_prompts_frame = ctk.CTkFrame(self)
+        self.quick_prompts_frame.pack(fill="x", padx=10, pady=(0, 5))
+        
+        self.quick_prompts_label = ctk.CTkLabel(
+            self.quick_prompts_frame,
+            text="📋 Quick Screenshot Prompts:",
+            font=ctk.CTkFont(size=11, weight="bold"),
+            text_color=("gray30", "gray70")
+        )
+        self.quick_prompts_label.pack(pady=(5, 2))
+        
+        # Prompt buttons container
+        self.prompts_container = ctk.CTkFrame(self.quick_prompts_frame)
+        self.prompts_container.pack(fill="x", padx=5, pady=(0, 5))
+        
+        # Quick prompt suggestions
+        quick_prompts = [
+            "What should I do next?",
+            "How do I solve this puzzle?",
+            "What's the best strategy here?",
+            "Explain this game mechanic"
+        ]
+        
+        for i, prompt in enumerate(quick_prompts):
+            btn = ctk.CTkButton(
+                self.prompts_container,
+                text=prompt,
+                height=25,
+                font=ctk.CTkFont(size=10),
+                fg_color="transparent",
+                border_width=1,
+                border_color=("gray60", "gray40"),
+                text_color=("gray40", "gray60"),
+                hover_color=("gray90", "gray20"),
+                command=lambda p=prompt: self.set_prompt(p)
+            )
+            btn.pack(side="left" if i < 2 else "right", padx=2, pady=2, fill="x", expand=True)
+        
         # Welcome message
         self.chat_text.insert("end", "Assistant: Hello! How can I help you today?\n\n")
+        self.chat_text.insert("end", "💡 Tips:\n")
+        self.chat_text.insert("end", "• Type a custom prompt, then click 📷 to analyze screenshots\n")
+        self.chat_text.insert("end", "• Use quick prompts above or create your own\n")
+        self.chat_text.insert("end", "• Leave message empty for default screenshot analysis\n\n")
         self.chat_text.configure(state="disabled")  # Make read-only initially
 
     def send_message(self):
@@ -90,6 +150,7 @@ class ChatWindow(ctk.CTkFrame):
             # Disable input while processing
             self.message_input.configure(state="disabled")
             self.send_button.configure(state="disabled")
+            self.screenshot_button.configure(state="disabled")
             
             # Send to backend
             threading.Thread(
@@ -98,11 +159,15 @@ class ChatWindow(ctk.CTkFrame):
                 daemon=True
             ).start()
 
-    def get_response(self, message):
+    def get_response(self, message, image_data=None):
         try:
+            payload = {"message": message}
+            if image_data:
+                payload["image_data"] = image_data
+                
             response = requests.post(
                 "http://127.0.0.1:8000/chat",
-                json={"message": message}
+                json=payload
             )
             if response.status_code == 200:
                 ai_response = response.json()["response"]
@@ -124,7 +189,84 @@ class ChatWindow(ctk.CTkFrame):
     def enable_input(self):
         self.message_input.configure(state="normal")
         self.send_button.configure(state="normal")
+        self.screenshot_button.configure(state="normal")
         self.message_input.focus()  # Focus back to input
+    
+    def send_screenshot_message(self):
+        """Capture a screenshot and send it with the current message to AI for analysis."""
+        message = self.message_input.get().strip()
+        using_default = False
+        
+        if not message:
+            message = "Please analyze this screenshot and provide gaming advice based on what you see."
+            using_default = True
+        
+        # Add visual feedback with better indication of prompt source
+        self.chat_text.configure(state="normal")
+        if using_default:
+            self.chat_text.insert("end", f"You: [📷 Screenshot] {message}\n\n")
+        else:
+            self.chat_text.insert("end", f"You: {message} [📷 Screenshot attached]\n\n")
+        
+        self.chat_text.insert("end", "📸 Capturing screenshot and analyzing...\n\n")
+        self.chat_text.see("end")
+        self.chat_text.configure(state="disabled")
+        self.message_input.delete(0, "end")
+        
+        # Reset placeholder text
+        self.message_input.configure(placeholder_text="Type your message or screenshot analysis prompt...")
+        
+        # Disable input while processing
+        self.message_input.configure(state="disabled")
+        self.send_button.configure(state="disabled")
+        self.screenshot_button.configure(state="disabled")
+        
+        # Capture screenshot and send to backend
+        threading.Thread(
+            target=self.capture_and_send_screenshot,
+            args=(message,),
+            daemon=True
+        ).start()
+    
+    def capture_and_send_screenshot(self, message):
+        """Capture screenshot and send to backend."""
+        try:
+            import base64
+            import io
+            from PIL import ImageGrab
+            
+            # Capture screenshot
+            screenshot = ImageGrab.grab()
+            
+            # Convert to base64
+            buffer = io.BytesIO()
+            screenshot.save(buffer, format='PNG')
+            img_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            
+            # Send to backend with image data
+            self.get_response(message, img_data)
+            
+        except Exception as e:
+            self.after(0, self.update_chat, f"Error capturing screenshot: {str(e)}")
+            self.after(0, self.enable_input)
+    
+    def on_screenshot_hover(self, event):
+        """Show helpful text when hovering over screenshot button."""
+        current_text = self.message_input.get().strip()
+        if not current_text:
+            self.message_input.configure(placeholder_text="Enter custom prompt for screenshot analysis...")
+    
+    def on_screenshot_leave(self, event):
+        """Reset placeholder text when leaving screenshot button."""
+        current_text = self.message_input.get().strip()
+        if not current_text:
+            self.message_input.configure(placeholder_text="Type your message or screenshot analysis prompt...")
+    
+    def set_prompt(self, prompt):
+        """Set a quick prompt in the message input."""
+        self.message_input.delete(0, "end")
+        self.message_input.insert(0, prompt)
+        self.message_input.focus()
 
     def return_to_menu(self):
         if hasattr(self.master.master, "show_buttons"):

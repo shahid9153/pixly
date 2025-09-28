@@ -3,14 +3,16 @@ import uvicorn
 from .chatbot import chat_with_gemini
 from .screenshot import start_screenshot_capture, stop_screenshot_capture, get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats
 from pydantic import BaseModel
+from typing import Optional
 from . import app
 
 class ChatMessage(BaseModel):
     message: str
+    image_data: Optional[str] = None  # Base64 encoded image data
 
 @app.post("/chat")
 async def chat(message: ChatMessage):
-    return await chat_with_gemini(message.message)
+    return await chat_with_gemini(message.message, message.image_data)
 
 @app.get("/taskA")
 def run_task_a():
