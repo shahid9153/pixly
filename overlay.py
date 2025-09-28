@@ -203,7 +203,8 @@ class SettingsWindow(ctk.CTkFrame):
             self.folder_frame,
             text="Select Folder",
             command=self.select_folder,
-            width=120
+            width=120,
+            fg_color="#4467C4"
         )
         self.folder_button.pack(side="right", padx=10, pady=10)
         
@@ -224,7 +225,7 @@ class SettingsWindow(ctk.CTkFrame):
             text="View Screenshots",
             command=self.view_screenshots,
             height=40,
-            fg_color="purple"
+            fg_color="#4467C4"
         )
         self.view_button.pack(fill="x", padx=10, pady=10)
         
@@ -540,11 +541,12 @@ class Overlay(ctk.CTk):
         self.chat_button = self.create_button(
             "Chat with Assistant",
             self.toggle_chat_window,
-            "blue"
+            "#636363",
+            "#222222"
         )
-        self.button2 = self.create_button("Settings", self.toggle_settings_window, "green")
-        self.button3 = self.create_button("Button 3", lambda: None, "orange")
-        self.button4 = self.create_button("Button 4", lambda: None, "purple")
+        self.button2 = self.create_button("Settings", self.toggle_settings_window, "#636363","#222222")
+        self.button3 = self.create_button("Button 3", lambda: None, "#636363","#222222")
+        self.button4 = self.create_button("Button 4", lambda: None, "#636363","#222222")
         
         # Show buttons initially
         self.show_buttons()
@@ -616,15 +618,15 @@ class Overlay(ctk.CTk):
         self.button_a.configure(state="normal")
         self.button_b.configure(state="normal")
     
-    def create_button(self, text, command, color):
+    def create_button(self, text, command, fg_color,hv_color):
         return ctk.CTkButton(
             self.buttons_frame,
             text=text,
             command=command,
             height=45,
             corner_radius=12,
-            fg_color=color,
-            hover_color=f"dark{color}"
+            fg_color=fg_color,
+            hover_color=hv_color
         )
 
     def toggle_chat_window(self):
