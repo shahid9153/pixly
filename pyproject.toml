@@ -16,4 +16,9 @@ dependencies = [
     "psutil>=5.9.0",
     "pywin32>=306",
     "cryptography>=41.0.0",
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.2.2",
+    "beautifulsoup4>=4.12.0",
+    "pandas>=2.0.0",
+    "lxml>=4.9.0",
 ]

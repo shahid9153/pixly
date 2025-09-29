@@ -2,6 +2,8 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 from .screenshot import get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats
+from .game_detection import detect_current_game
+from .vector_service import search_knowledge
 import base64
 import json
 system_prompt_file = open("PROMPTS.txt","r")
@@ -14,6 +16,9 @@ model = genai.GenerativeModel(model_name="gemini-2.5-flash-lite",system_instruct
 
 async def chat_with_gemini(message: str, image_data: str = None):
     try:
+        # Detect current game
+        detected_game = detect_current_game(message)
+        
         # If image data is provided, use vision capabilities
         if image_data:
             import PIL.Image
@@ -31,6 +36,10 @@ async def chat_with_gemini(message: str, image_data: str = None):
             Please analyze this image in the context of gaming and provide specific, actionable advice based on what you can see.
             Focus on game mechanics, strategies, UI elements, or any gaming-related aspects visible in the screenshot.
             """
+            
+            # Add game context if detected
+            if detected_game:
+                enhanced_message += f"\n\nDETECTED GAME: {detected_game.upper()}"
             
             # Generate content with image
             response = model.generate_content([enhanced_message, image])
@@ -59,7 +68,30 @@ async def chat_with_gemini(message: str, image_data: str = None):
             response = model.generate_content(enhanced_message)
             return {"response": response.text}
         else:
-            response = model.generate_content(message)
+            # Enhanced chat with game knowledge
+            enhanced_message = message
+            
+            # Add game context and knowledge if detected
+            if detected_game:
+                enhanced_message += f"\n\nDETECTED GAME: {detected_game.upper()}"
+                
+                # Search for relevant knowledge
+                try:
+                    knowledge_results = search_knowledge(detected_game, message, limit=3)
+                    
+                    if knowledge_results:
+                        knowledge_context = "\n\nRELEVANT KNOWLEDGE FROM GAME DATABASE:\n"
+                        for i, result in enumerate(knowledge_results, 1):
+                            knowledge_context += f"\n{i}. {result['metadata'].get('title', 'Unknown Title')}\n"
+                            knowledge_context += f"   Source: {result['metadata'].get('content_type', 'unknown').upper()}\n"
+                            knowledge_context += f"   Content: {result['content'][:200]}...\n"
+                            knowledge_context += f"   URL: {result['metadata'].get('url', 'N/A')}\n"
+                        
+                        enhanced_message += knowledge_context
+                except Exception as e:
+                    print(f"Error searching knowledge: {e}")
+            
+            response = model.generate_content(enhanced_message)
             return {"response": response.text}
     except Exception as e:
         print(e)

@@ -1,0 +1,1 @@
+1. Make a better system for sending existing screenshots. Improve keyword search and allow user to edit the message before sending the sreenshot instead of sending it.
