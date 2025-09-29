@@ -24,6 +24,7 @@ Pixly is a desktop gaming assistant that combines AI chat with automated, privac
 - [Security \& Privacy](#security--privacy)
 - [Pixly Quick Start Guide](#pixly-quick-start-guide)
   - [📋 Prerequisites](#-prerequisites)
+  - [Quick Setup](#quick-setup)
   - [Manual Setup](#manual-setup)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
@@ -221,23 +222,35 @@ git --version
 </table>
 </div>
 
+
+### Quick Setup
+
+1. Clone the repository : 
+```bash 
+git clone https://github.com/BrataBuilds/hacktoberfest
+cd hacktoberfest
+```
+2. Open a powershell terminal as administrator and run the setup.bat file.
+```bash
+.\setup.bat
+```
 ### Manual Setup 
 1. Clone the repository : 
 ```bash 
 git clone https://github.com/BrataBuilds/hacktoberfest
 cd hacktoberfest
 ```
-2. Install uv package manager 
+1. Install uv package manager 
 ```bash 
 pip install uv
 # or
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-3. Install dependencies 
+1. Install dependencies 
 ```bash
 uv sync
 ```
-4. Set up environment variables : 
+1. Set up environment variables : 
    1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
    2. Create a new API key
    3. Add to `.env`:
