@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 import json
-
+from PIL import Image
 class ChatWindow(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -15,7 +15,7 @@ class ChatWindow(ctk.CTkFrame):
         # Title for chat interface
         self.chat_title = ctk.CTkLabel(
             self,
-            text="Chat with Assistant",
+            text="Chat with Pixly",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color=("gray20", "gray80")
         )
@@ -27,11 +27,26 @@ class ChatWindow(ctk.CTkFrame):
             height=300,
             font=ctk.CTkFont(size=12),
             wrap="word",
-            corner_radius=8,
+            corner_radius=15,
             border_width=1,
             border_color=("gray70", "gray30")
         )
         self.chat_text.pack(fill="both", expand=True, padx=10, pady=(5,5))
+        try:
+            self.chat_text.tag_configure("user", foreground="#00C853")
+            self.chat_text.tag_configure("Pixly", foreground="#82B1FF")
+            self.chat_text.tag_configure("system", foreground="#B0B0B0")
+        except Exception:
+            pass
+
+        # Typing indicator label
+        self.typing_label = ctk.CTkLabel(
+            self,
+            text="",
+            font=ctk.CTkFont(size=11, slant="italic"),
+            text_color=("gray40", "gray60")
+        )
+        self.typing_label.pack(fill="x", padx=12)
         
         # Input area container frame
         self.bottom_frame = ctk.CTkFrame(self)
@@ -57,7 +72,7 @@ class ChatWindow(ctk.CTkFrame):
             fg_color="#4467C4",
             hover_color="#365A9D"
         )
-        self.screenshot_button.pack(side="right", padx=(0, 5))
+        self.screenshot_button.pack(side="right", padx=(10, 0))
         
         # Add tooltip-like behavior for screenshot button
         self.screenshot_button.bind("<Enter>", self.on_screenshot_hover)
@@ -75,76 +90,25 @@ class ChatWindow(ctk.CTkFrame):
         self.send_button.pack(side="right")
         
         # Back button
-        self.back_button = ctk.CTkButton(
-            self,
-            text="← Back to Menu",
-            command=self.return_to_menu,
-            height=30,
-            corner_radius=8,
-            fg_color="transparent",
-            text_color=("gray40", "gray60"),
-            hover_color=("gray75", "gray25")
-        )
-        self.back_button.pack(padx=10, pady=5, anchor="w")
+        
+        # self.back_button.pack(padx=10, pady=5, anchor="w")
         
         # Bind Enter key
         self.message_input.bind("<Return>", lambda e: self.send_message())
-        
-        # Create quick prompt buttons
-        self.quick_prompts_frame = ctk.CTkFrame(self)
-        self.quick_prompts_frame.pack(fill="x", padx=10, pady=(0, 5))
-        
-        self.quick_prompts_label = ctk.CTkLabel(
-            self.quick_prompts_frame,
-            text="📋 Quick Screenshot Prompts:",
-            font=ctk.CTkFont(size=11, weight="bold"),
-            text_color=("gray30", "gray70")
-        )
-        self.quick_prompts_label.pack(pady=(5, 2))
-        
-        # Prompt buttons container
-        self.prompts_container = ctk.CTkFrame(self.quick_prompts_frame)
-        self.prompts_container.pack(fill="x", padx=5, pady=(0, 5))
-        
-        # Quick prompt suggestions
-        quick_prompts = [
-            "What should I do next?",
-            "How do I solve this puzzle?",
-            "What's the best strategy here?",
-            "Explain this game mechanic"
-        ]
-        
-        for i, prompt in enumerate(quick_prompts):
-            btn = ctk.CTkButton(
-                self.prompts_container,
-                text=prompt,
-                height=25,
-                font=ctk.CTkFont(size=10),
-                fg_color="transparent",
-                border_width=1,
-                border_color=("gray60", "gray40"),
-                text_color=("gray40", "gray60"),
-                hover_color=("gray90", "gray20"),
-                command=lambda p=prompt: self.set_prompt(p)
-            )
-            btn.pack(side="left" if i < 2 else "right", padx=2, pady=2, fill="x", expand=True)
-        
+                
         # Welcome message
-        self.chat_text.insert("end", "Assistant: Hello! How can I help you today?\n\n")
         self.chat_text.insert("end", "💡 Tips:\n")
         self.chat_text.insert("end", "• Type a custom prompt, then click 📷 to analyze screenshots\n")
-        self.chat_text.insert("end", "• Use quick prompts above or create your own\n")
-        self.chat_text.insert("end", "• Leave message empty for default screenshot analysis\n\n")
+        self.chat_text.insert("end", "• Use quick prompts below or create your own\n")
+        self.chat_text.insert("end", "• Leave message empty for default screenshot analysis prompt.\n\n")
+        self.chat_text.insert("end", "Pixly: Hello! How can I help you today?\n\n")
         self.chat_text.configure(state="disabled")  # Make read-only initially
 
     def send_message(self):
         message = self.message_input.get().strip()
         if message:
-            # Enable text widget temporarily
-            self.chat_text.configure(state="normal")
-            self.chat_text.insert("end", f"You: {message}\n\n")
-            self.chat_text.see("end")  # Auto-scroll to bottom
-            self.chat_text.configure(state="disabled")
+            # Add user message
+            self.add_user_message(message)
             self.message_input.delete(0, "end")
             
             # Disable input while processing
@@ -152,7 +116,8 @@ class ChatWindow(ctk.CTkFrame):
             self.send_button.configure(state="disabled")
             self.screenshot_button.configure(state="disabled")
             
-            # Send to backend
+            # Show typing indicator and send to backend
+            self.start_typing()
             threading.Thread(
                 target=self.get_response,
                 args=(message,),
@@ -171,20 +136,54 @@ class ChatWindow(ctk.CTkFrame):
             )
             if response.status_code == 200:
                 ai_response = response.json()["response"]
-                self.after(0, self.update_chat, ai_response)
+                self.after(0, self.add_assistant_message, ai_response)
             else:
-                self.after(0, self.update_chat, "Error: Could not get response")
+                self.after(0, self.add_assistant_message, "Error: Could not get response")
         except Exception as e:
-            self.after(0, self.update_chat, f"Error: {str(e)}")
+            self.after(0, self.add_assistant_message, f"Error: {str(e)}")
         finally:
             # Re-enable input
+            self.after(0, self.stop_typing)
             self.after(0, self.enable_input)
 
-    def update_chat(self, response):
+    def add_user_message(self, text):
         self.chat_text.configure(state="normal")
-        self.chat_text.insert("end", f"Assistant: {response}\n\n")
+        try:
+            self.chat_text.insert("end", "You: ", "user")
+        except Exception:
+            self.chat_text.insert("end", "You: ")
+        self.chat_text.insert("end", f"{text}\n\n")
         self.chat_text.see("end")
         self.chat_text.configure(state="disabled")
+
+    def add_assistant_message(self, text):
+        self.chat_text.configure(state="normal")
+        try:
+            self.chat_text.insert("end", "Pixly : ", "assistant")
+        except Exception:
+            self.chat_text.insert("end", "Pixly : ")
+        self.chat_text.insert("end", f"{text}\n\n")
+        self.chat_text.see("end")
+        self.chat_text.configure(state="disabled")
+
+    def start_typing(self):
+        self._typing_active = True
+        self._typing_step = 0
+        self._animate_typing()
+
+    def stop_typing(self):
+        self._typing_active = False
+        self.typing_label.configure(text="")
+
+    def _animate_typing(self):
+        if not hasattr(self, "_typing_active"):
+            self._typing_active = False
+        if not self._typing_active:
+            return
+        dots = "." * ((self._typing_step % 3) + 1)
+        self.typing_label.configure(text=f"Assistant is typing{dots}")
+        self._typing_step += 1
+        self.after(400, self._animate_typing)
 
     def enable_input(self):
         self.message_input.configure(state="normal")
@@ -204,13 +203,11 @@ class ChatWindow(ctk.CTkFrame):
         # Add visual feedback with better indication of prompt source
         self.chat_text.configure(state="normal")
         if using_default:
-            self.chat_text.insert("end", f"You: [📷 Screenshot] {message}\n\n")
+            self.add_user_message(f"[📷 Screenshot] {message}")
         else:
-            self.chat_text.insert("end", f"You: {message} [📷 Screenshot attached]\n\n")
+            self.add_user_message(f"{message} [📷 Screenshot attached]")
         
-        self.chat_text.insert("end", "📸 Capturing screenshot and analyzing...\n\n")
-        self.chat_text.see("end")
-        self.chat_text.configure(state="disabled")
+        self.start_typing()
         self.message_input.delete(0, "end")
         
         # Reset placeholder text
@@ -291,6 +288,8 @@ class SettingsWindow(ctk.CTkFrame):
         
         # Load current settings
         self.settings = self.load_settings()
+        # Fetch API key status (non-blocking)
+        threading.Thread(target=self.fetch_api_key_status, daemon=True).start()
         
         # Screenshot toggle
         self.toggle_frame = ctk.CTkFrame(self.settings_container)
@@ -357,6 +356,33 @@ class SettingsWindow(ctk.CTkFrame):
             text_color=("gray50", "gray50")
         )
         self.folder_path_label.pack(side="right", padx=10, pady=5)
+
+        # API Key section
+        self.api_key_frame = ctk.CTkFrame(self.settings_container)
+        self.api_key_frame.pack(fill="x", pady=10)
+
+        self.api_key_label = ctk.CTkLabel(
+            self.api_key_frame,
+            text="Gemini API Key",
+            font=ctk.CTkFont(size=14, weight="bold")
+        )
+        self.api_key_label.pack(side="left", padx=10, pady=10)
+
+        self.api_key_entry = ctk.CTkEntry(
+            self.api_key_frame,
+            placeholder_text="Enter or paste your API key",
+            width=260
+        )
+        self.api_key_entry.pack(side="left", padx=10, pady=10)
+
+        self.api_key_save_btn = ctk.CTkButton(
+            self.api_key_frame,
+            text="Save API Key",
+            command=self.save_api_key,
+            width=120,
+            fg_color="#4467C4"
+        )
+        self.api_key_save_btn.pack(side="right", padx=10, pady=10)
         
         # Manual view button
         self.view_frame = ctk.CTkFrame(self.settings_container)
@@ -385,18 +411,7 @@ class SettingsWindow(ctk.CTkFrame):
         self.save_button.pack(fill="x", padx=10, pady=10)
         
         # Back button
-        self.back_button = ctk.CTkButton(
-            self,
-            text="← Back to Menu",
-            command=self.return_to_menu,
-            height=30,
-            corner_radius=8,
-            fg_color="transparent",
-            text_color=("gray40", "gray60"),
-            hover_color=("gray75", "gray25")
-        )
-        self.back_button.pack(padx=10, pady=5, anchor="w")
-    
+
     def load_settings(self):
         """Load settings from file."""
         settings_file = "screenshot_settings.json"
@@ -413,6 +428,21 @@ class SettingsWindow(ctk.CTkFrame):
             except:
                 return default_settings
         return default_settings
+
+    def fetch_api_key_status(self):
+        """Fetch API key configuration status from backend and update placeholder/label."""
+        try:
+            resp = requests.get("http://127.0.0.1:8000/settings/api-key", timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("configured"):
+                    preview = data.get("preview", "")
+                    self.api_key_entry.configure(placeholder_text=f"Configured: {preview}")
+                else:
+                    self.api_key_entry.configure(placeholder_text="Enter or paste your API key")
+        except Exception:
+            # Silent fail; keep default placeholder
+            pass
     
     def save_settings(self):
         """Save settings to file."""
@@ -431,6 +461,31 @@ class SettingsWindow(ctk.CTkFrame):
         
         # Show confirmation
         self.show_message("Settings saved successfully!")
+
+    def save_api_key(self):
+        """Send API key to backend for persistence and live reconfigure."""
+        try:
+            key = (self.api_key_entry.get() or "").strip()
+            if not key:
+                self.show_message("Please enter a valid API key")
+                return
+            resp = requests.post(
+                "http://127.0.0.1:8000/settings/api-key",
+                json={"api_key": key},
+                timeout=8
+            )
+            if resp.status_code == 200:
+                self.show_message("API key saved")
+                self.api_key_entry.delete(0, "end")
+                self.fetch_api_key_status()
+            else:
+                try:
+                    detail = resp.json().get("detail", "Error saving API key")
+                except Exception:
+                    detail = "Error saving API key"
+                self.show_message(detail)
+        except Exception as e:
+            self.show_message(f"Error: {str(e)}")
     
     def apply_settings(self):
         """Apply settings to the screenshot system."""
@@ -494,7 +549,7 @@ class SettingsWindow(ctk.CTkFrame):
             text=message,
             font=ctk.CTkFont(size=12),
             fg_color=("green", "darkgreen"),
-            corner_radius=8
+            corner_radius=15
         )
         msg_label.pack(pady=5)
         
@@ -550,6 +605,32 @@ class ScreenshotViewer(ctk.CTkToplevel):
             width=80
         )
         view_btn.pack(side="right", padx=10, pady=10)
+
+        # Delete button
+        delete_btn = ctk.CTkButton(
+            item_frame,
+            text="Delete",
+            command=lambda: self.delete_screenshot_item(item_frame, screenshot[0]),
+            width=80,
+            fg_color=("#B71C1C", "#B71C1C"),
+            hover_color=("#D32F2F", "#D32F2F")
+        )
+        delete_btn.pack(side="right", padx=5, pady=10)
+
+    def delete_screenshot_item(self, item_frame, screenshot_id):
+        """Call backend to delete screenshot and remove from UI."""
+        try:
+            resp = requests.delete(f"http://127.0.0.1:8000/screenshots/{screenshot_id}", timeout=5)
+            if resp.status_code == 200:
+                item_frame.destroy()
+            else:
+                try:
+                    detail = resp.json().get('detail', 'Failed to delete screenshot')
+                except Exception:
+                    detail = 'Failed to delete screenshot'
+                self.show_message(detail)
+        except Exception as e:
+            self.show_message(f"Error: {str(e)}")
     
     def view_screenshot(self, screenshot_id):
         """View a specific screenshot in a new window."""
@@ -609,7 +690,7 @@ class Overlay(ctk.CTk):
         
         # Configure window
         self.title("Pixly")
-        self.geometry("500x500")
+        self.geometry("600x700")
         self.overrideredirect(True)  # Remove window decorations
         self.attributes('-topmost', True)  # Stay on top
         self.configure(fg_color=("gray90", "gray10"))
@@ -666,7 +747,7 @@ class Overlay(ctk.CTk):
         self.title_label.pack(pady=15)
         
         # Main content area
-        self.content_frame = ctk.CTkFrame(self.frame)
+        self.content_frame = ctk.CTkFrame(self.frame,corner_radius=15)
         self.content_frame.pack(fill="both", expand=True, padx=15, pady=(0, 15))
         
         # Chat window (initially hidden)
@@ -676,12 +757,12 @@ class Overlay(ctk.CTk):
         self.settings_window = SettingsWindow(self.content_frame)
         
         # Buttons container
-        self.buttons_frame = ctk.CTkFrame(self.content_frame)
+        self.buttons_frame = ctk.CTkFrame(self.content_frame,corner_radius=15)
         self.buttons_frame.pack(fill="both", expand=True)
         
         # Create buttons
         self.chat_button = self.create_button(
-            "Chat with Assistant",
+            "Chat with Pixly",
             self.toggle_chat_window,
             "#636363",
             "#222222"
@@ -705,8 +786,8 @@ class Overlay(ctk.CTk):
     def center_window(self):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        x = screen_width - 430  # Adjusted for new width (400 + padding)
-        y = (screen_height - 530) // 2  # Adjusted for new height (500 + padding)
+        x = (screen_width - 700) // 2
+        y = (screen_height - 700) // 2
         self.geometry(f'+{x}+{y}')
     
     def close_app(self):
@@ -766,7 +847,7 @@ class Overlay(ctk.CTk):
             text=text,
             command=command,
             height=45,
-            corner_radius=12,
+            corner_radius=15,
             fg_color=fg_color,
             hover_color=hv_color
         )

@@ -306,3 +306,22 @@ def get_screenshot_stats():
     """Get screenshot statistics."""
     global screenshot_capture
     return screenshot_capture.get_stats()
+
+def delete_screenshot(screenshot_id: int) -> bool:
+    """Delete a screenshot row by ID from the database.
+
+    Returns True if a row was deleted, False otherwise.
+    """
+    try:
+        conn = sqlite3.connect('screenshots.db')
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM screenshots WHERE id = ?', (screenshot_id,))
+        deleted = cursor.rowcount > 0
+        conn.commit()
+        conn.close()
+        if deleted:
+            print(f"Deleted screenshot id={screenshot_id}")
+        return deleted
+    except Exception as e:
+        print(f"Error deleting screenshot {screenshot_id}: {e}")
+        return False

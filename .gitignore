@@ -12,3 +12,4 @@ wheels/
 *.key
 *.json
 *.db
+vector_db/

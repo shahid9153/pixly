@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
+import os
 import uvicorn
-from .chatbot import chat_with_gemini
-from .screenshot import start_screenshot_capture, stop_screenshot_capture, get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats
+from .chatbot import chat_with_gemini, set_api_key
+from .screenshot import start_screenshot_capture, stop_screenshot_capture, get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats, delete_screenshot
 from .game_detection import detect_current_game, get_available_games as get_detection_games
 from .knowledge_manager import get_available_games as get_csv_games, validate_csv_structure
 from .vector_service import add_game_knowledge, search_knowledge, get_game_stats, list_available_games
@@ -21,6 +22,9 @@ class KnowledgeSearchRequest(BaseModel):
     query: str
     content_types: Optional[List[str]] = None
     limit: Optional[int] = 5
+
+class ApiKeyRequest(BaseModel):
+    api_key: str
 
 @app.post("/chat")
 async def chat(message: ChatMessage):
@@ -68,6 +72,20 @@ def get_screenshot_endpoint(screenshot_id: int):
         return {"status": "ok", "data": base64.b64encode(screenshot_data).decode('utf-8')}
     else:
         return {"status": "error", "message": "Screenshot not found"}
+
+@app.delete("/screenshots/{screenshot_id}")
+def delete_screenshot_endpoint(screenshot_id: int):
+    """Delete screenshot by ID."""
+    try:
+        deleted = delete_screenshot(screenshot_id)
+        if deleted:
+            return {"status": "ok", "message": f"Deleted screenshot {screenshot_id}"}
+        else:
+            raise HTTPException(status_code=404, detail="Screenshot not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting screenshot: {str(e)}")
 
 # Game Detection endpoints
 @app.post("/games/detect")
@@ -173,6 +191,50 @@ def validate_game_csv(game_name: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error validating CSV: {str(e)}")
+
+# Settings endpoints
+@app.get("/settings/api-key")
+def get_api_key_status():
+    """Return whether an API key is configured (masked)."""
+    import os
+    key = os.getenv('GOOGLE_API_KEY') or ""
+    masked = (len(key) >= 8)
+    preview = f"{key[:4]}***{key[-4:]}" if masked else ""
+    return {"status": "ok", "configured": bool(key), "preview": preview}
+
+@app.post("/settings/api-key")
+def update_api_key(req: ApiKeyRequest):
+    """Save API key to .env and reconfigure the chatbot model."""
+    try:
+        key = (req.api_key or "").strip()
+        if not key:
+            raise HTTPException(status_code=400, detail="API key cannot be empty")
+        # Persist to .env
+        env_path = ".env"
+        # Load existing lines if any
+        lines = []
+        if os.path.exists(env_path):
+            with open(env_path, 'r', encoding='utf-8') as f:
+                lines = f.read().splitlines()
+        # Update or append GOOGLE_API_KEY
+        found = False
+        for i, line in enumerate(lines):
+            if line.startswith("GOOGLE_API_KEY="):
+                lines[i] = f"GOOGLE_API_KEY={key}"
+                found = True
+                break
+        if not found:
+            lines.append(f"GOOGLE_API_KEY={key}")
+        with open(env_path, 'w', encoding='utf-8') as f:
+            f.write("\n".join(lines) + ("\n" if lines else ""))
+        # Reconfigure runtime
+        if not set_api_key(key):
+            raise HTTPException(status_code=500, detail="Failed to apply API key at runtime")
+        return {"status": "ok", "message": "API key updated"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating API key: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)

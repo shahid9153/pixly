@@ -14,6 +14,20 @@ load_dotenv()
 genai.configure(api_key=os.getenv('GOOGLE_API_KEY'),)
 model = genai.GenerativeModel(model_name="gemini-2.5-flash-lite",system_instruction=system_prompt)
 
+def set_api_key(new_key: str):
+    """Update the Google API key at runtime and reinitialize the model."""
+    try:
+        if not new_key:
+            raise ValueError("Empty API key")
+        os.environ['GOOGLE_API_KEY'] = new_key
+        genai.configure(api_key=new_key)
+        global model
+        model = genai.GenerativeModel(model_name="gemini-2.5-flash-lite", system_instruction=system_prompt)
+        return True
+    except Exception as e:
+        print(f"Error setting API key: {e}")
+        return False
+
 async def chat_with_gemini(message: str, image_data: str = None):
     try:
         # Detect current game
