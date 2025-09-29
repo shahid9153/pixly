@@ -1,5 +1,5 @@
+"""Game detection using process id, screenshots and user query"""
 import psutil
-import re
 from typing import Optional, Dict, List
 from .screenshot import get_recent_screenshots
 

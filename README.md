@@ -1,234 +1,270 @@
-# Pixly - Your AI Gaming Assistant 🎮
+<div align="center">
+<h1>
+Pixly - Your AI Gaming Assistant 🎮
+</h1>
+</div>
 
-Pixly is a sophisticated desktop gaming assistant that combines AI-powered chat functionality with automated screenshot capture to provide contextual gaming advice and support.
+Pixly is a desktop gaming assistant that combines AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you’re playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
 
-## 🚀 Quick Start
+- [What Pixly Does](#what-pixly-does)
+- [Architecture Overview](#architecture-overview)
+  - [1) UI Overlay (`overlay.py`)](#1-ui-overlay-overlaypy)
+  - [2) Backend API (`backend/`)](#2-backend-api-backend)
+  - [3) AI \& RAG Layer](#3-ai--rag-layer)
+- [Knowledge Base \& Data Flow](#knowledge-base--data-flow)
+- [Game Detection](#game-detection)
+- [API Surface (Selected)](#api-surface-selected)
+- [Project Structure](#project-structure)
+- [Technology Stack](#technology-stack)
+- [How Components Work Together](#how-components-work-together)
+- [Security \& Privacy](#security--privacy)
+- [Pixly Quick Start Guide](#pixly-quick-start-guide)
+  - [📋 Prerequisites](#-prerequisites)
+  - [Manual Setup](#manual-setup)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
-### Prerequisites
-- Python 3.11 or higher
-- Windows OS (for screenshot capture functionality)
-- Google Gemini API key
 
-### Installation & Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd hacktoberfest
-   ```
 
-2. **Install dependencies**
-   ```bash
-   uv sync
-   ```
+## What Pixly Does
 
-3. **Set up environment variables**
-   - Create a `.env` file in the project root
-   - Add your Google Gemini API key:
-     ```
-     GOOGLE_API_KEY=your_api_key_here
-     ```
+- Intelligent, game-focused chat using Google Gemini with a “Game Expert” system prompt
+- Contextual help based on your active game (process detection and/or user message)
+- Optional screenshot-powered context for visual analysis
+- RAG pipeline over per-game CSV knowledge with local vector search (Chroma)
+- Modern desktop overlay for chatting, settings, and screenshot gallery
 
-4. **Run the application**
-   
-   **Terminal 1 - Start Backend:**
-   ```bash
-   uv run run.py
-   ```
-   
-   **Terminal 2 - Start Frontend:**
-   ```bash
-   uv run overlay.py
-   ```
+## Architecture Overview
 
-5. **Start using Pixly**
-   - Press `Ctrl+Alt+M` to toggle the overlay
-   - Start chatting with your AI gaming assistant!
+Pixly is organized into three main layers: UI Overlay, Backend API, and AI/RAG services, all running locally.
 
-## 🎯 Features
+### 1) UI Overlay (`overlay.py`)
+- CustomTkinter-based floating overlay, always-on-top, draggable
+- Chat window with typing indicator and styled messages (user vs assistant)
+- Settings window to manage screenshot capture and set the Google API key (persisted to `.env` via backend)
+- Screenshot gallery with View and Delete actions
 
-### 🤖 **Intelligent Gaming Assistant**
-- AI-powered chatbot specialized in gaming knowledge
-- Contextual advice based on what games you're currently playing
-- Screenshot analysis for visual game elements
-- Encyclopedic knowledge of video games, board games, and tabletop RPGs
+### 2) Backend API (`backend/`)
+- FastAPI server exposes HTTP endpoints on 127.0.0.1:8000
+- Responsibilities:
+  - Route chat requests to Gemini
+  - Manage screenshots (start/stop capture, list, view, delete)
+  - Detect current game (process + manual keywords)
+  - Manage per-game knowledge ingestion and vectorization
+  - Provide vector search and knowledge stats
+  - Manage API key configuration (.env persistence + live reconfigure)
 
-### 📸 **Automated Screenshot Capture**
-- Background monitoring of your gaming sessions
-- Privacy-focused with local AES encryption
-- Smart filtering by application type
-- Configurable capture intervals
-- Secure SQLite database storage
+Key modules:
+- `backend/backend.py`: API endpoints and routing
+- `backend/chatbot.py`: Gemini client configuration, runtime reconfigure, and chat logic (with RAG context injection)
+- `backend/screenshot.py`: Encrypted screenshot capture and storage; database operations; delete support
+- `backend/game_detection.py`: Game detection via running processes, recent screenshots, and user message keywords
+- `backend/knowledge_manager.py`: CSV ingestion and text extraction (wiki + forum; YouTube entries use user-provided description)
+- `backend/vector_service.py`: Chroma persistent client, collection management, chunking, embeddings, and semantic queries
 
-### 🖥️ **Modern Desktop Interface**
-- Always-on-top overlay for quick access
-- Global hotkey (`Ctrl+Alt+M`) for instant toggling
-- Intuitive settings management
-- Built-in screenshot viewer with gallery
-- Dark theme with modern UI elements
+### 3) AI & RAG Layer
+- Model: `Google Gemini 2.5 Flash Lite` for responses
+- System prompt (`PROMPTS.txt`) defines "Game Expert" persona and instructs grounding answers in retrieved snippets (WIKI / YOUTUBE / FORUM) with URLs
+- Vector DB: `Chroma` (persistent on disk in `vector_db/`)
+- Embeddings: sentence-transformers by default (configurable); text is chunked and embedded per content piece
+- Retrieval: top-k relevant chunks by cosine similarity; included as context in the prompt
 
-## 🏗️ Architecture Overview
+## Knowledge Base & Data Flow
 
-### Frontend Layer (`overlay.py`)
-- **Technology**: CustomTkinter (modern Python GUI framework)
-- **Design**: Floating overlay window with draggable interface
-- **Components**:
-  - Chat interface for AI conversations
-  - Settings panel for configuration
-  - Screenshot viewer and gallery
-  - Semi-transparent, always-on-top design
-
-### Backend Layer
-The backend is structured with modular components:
-
-#### API Server (`backend/backend.py`)
-- **Framework**: FastAPI with automatic documentation
-- **Port**: 127.0.0.1:8000
-- **Endpoints**:
-  - `/chat` - AI conversation interface
-  - `/screenshots/*` - Screenshot management APIs
-  - `/taskA`, `/taskB` - Extensible task endpoints
-
-#### AI Chatbot (`backend/chatbot.py`)
-- **Model**: Google Gemini 2.5 Flash Lite
-- **Specialization**: Gaming expert personality
-- **Features**: Context-aware responses using screenshot data
-
-#### Screenshot System (`backend/screenshot.py`)
-- **Encryption**: Fernet (AES 128) for secure storage
-- **Database**: SQLite with optimized indexing
-- **Monitoring**: Real-time window and application tracking
-
-### Data Layer
-- **Primary Database**: `screenshots.db` (encrypted SQLite)
-- **Configuration**: JSON-based settings
-- **Security**: Separate encryption key management
-
-## 🛠️ Technology Stack
-
-### Core Dependencies
-```toml
-customtkinter = ">=5.2.2"     # Modern GUI framework
-fastapi = ">=0.117.1"         # Async web framework  
-google-generativeai = ">=0.8.3"  # AI integration
-uvicorn = ">=0.37.0"          # ASGI server
-cryptography = ">=41.0.0"    # Encryption
-pillow = ">=10.0.0"           # Image processing
-psutil = ">=5.9.0"            # System monitoring
-pywin32 = ">=306"             # Windows integration
-keyboard = ">=0.13.5"         # Global hotkeys
-requests = ">=2.32.5"         # HTTP client
-```
-
-### Development Tools
-- **Package Manager**: [uv](https://github.com/astral-sh/uv) (fast Python package manager)
-- **Configuration**: `pyproject.toml` (modern Python packaging)
-- **Environment**: `.env` for sensitive configuration
-
-## 📁 Project Structure
+Pixly’s knowledge is curated per game via CSV files that live in `games_info/`. The CSV schema is simple and contributor-friendly:
 
 ```
-hacktoberfest/
+wiki,wiki_desc,youtube,yt_desc,forum,forum_desc
+```
+
+- **wiki**: URL to a relevant wiki page; Pixly extracts textual content
+- **wiki_desc**: Contributor-provided description of the wiki URL
+- **youtube**: URL to a relevant video; Pixly does not auto-transcribe; it uses the contributor-provided description
+- **yt_desc**: Contributor-provided description of the YouTube URL
+- **forum**: URL to a relevant forum/thread; Pixly extracts textual content
+- **forum_desc**: Contributor-provided description of the forum URL
+
+Processing pipeline per game:
+1. Load CSV for the game (e.g., `games_info/minecraft.csv`)
+2. Extract text from wiki and forum URLs; keep YouTube descriptions as-is
+3. Clean and chunk text into manageable segments (e.g., ~512 tokens)
+4. Generate embeddings for each chunk and persist into Chroma collections
+5. On chat, detect game and run a semantic search to retrieve top snippets, then ground Gemini’s response on those
+
+Vector DB collections are organized by game and source type, e.g. `minecraft_wiki`, `minecraft_youtube`, `minecraft_forum`.
+
+## Game Detection
+
+Pixly uses a layered strategy to infer the current game:
+- **Process Detection**: Scans running processes for known executables
+- **Screenshot Context**: Uses recent screenshot metadata (app/window) when available
+- **Manual Override**: Detects game mentions in the user’s message (e.g., “I’m playing Minecraft”)
+
+The detection result is passed into the RAG layer to scope retrieval to the active game’s knowledge base.
+
+## API Surface (Selected)
+
+- `POST /chat`: Chat with Gemini; auto-detects game; augments prompt with retrieved snippets
+- `POST /screenshots/start?interval=30`: Start periodic capture
+- `POST /screenshots/stop`: Stop capture
+- `GET /screenshots/recent?limit=10&application=...`: List recent screenshots (metadata)
+- `GET /screenshots/{id}`: Fetch a screenshot’s image data (base64)
+- `DELETE /screenshots/{id}`: Delete a screenshot entry
+- `POST /games/detect`: Detect current game (optionally pass message for keyword hints)
+- `GET /games/list`: Enumerate detection-supported games, CSV-available games, and games with vectors
+- `GET /games/{game}/knowledge/validate`: Validate CSV schema
+- `POST /games/{game}/knowledge/process`: Ingest CSV and build vectors in Chroma
+- `POST /games/{game}/knowledge/search`: Vector search within a game (query, content_types, limit)
+- `GET /games/{game}/knowledge/stats`: Document counts per source type
+- `GET /settings/api-key`: Report whether the Gemini API key is configured (masked preview)
+- `POST /settings/api-key`: Persist API key to `.env` and live-reconfigure the chatbot
+
+## Project Structure
+
+```
+Hacktober Fest/
 ├── backend/
-│   ├── __init__.py          # FastAPI app initialization
-│   ├── backend.py           # API endpoints and routing
-│   ├── chatbot.py           # Gemini AI integration & prompt handling
-│   └── screenshot.py        # Encrypted screenshot capture system
-├── overlay.py               # Main GUI application with CustomTkinter
-├── run.py                   # Backend server launcher
-├── PROMPTS.txt              # AI system instructions and personality
-├── pyproject.toml           # Project dependencies and metadata
-├── screenshots.db           # Encrypted screenshot database (auto-created)
-├── screenshot_key.key       # Encryption key (auto-generated)
-└── README.md                # This file
+│   ├── __init__.py               # FastAPI app initialization
+│   ├── backend.py                # API endpoints and routing
+│   ├── chatbot.py                # Gemini integration, RAG-aware chat, runtime reconfigure
+│   ├── screenshot.py             # Encrypted screenshot capture, DB ops, delete support
+│   ├── game_detection.py         # Process/message/screenshot-based game detection
+│   ├── knowledge_manager.py      # CSV ingestion and content extraction (wiki/forum)
+│   └── vector_service.py         # Chroma collections, embeddings, and search
+├── overlay.py                    # CustomTkinter overlay (chat, settings, screenshot viewer)
+├── games_info/                   # Per-game CSVs (e.g., minecraft.csv)
+├── vector_db/                    # Chroma persistent storage
+├── PROMPTS.txt                   # System persona + RAG grounding instructions
+├── test_system.py                # Local API test harness
+├── run.py                        # Backend server launcher
+├── pyproject.toml                # Dependencies and metadata
+├── screenshots.db                # Encrypted screenshot database (auto-created)
+├── screenshot_key.key            # Encryption key (auto-generated)
+└── README.md                     # Project documentation
 ```
 
-## 🔒 Security & Privacy
+## Technology Stack
 
-- **Local Processing**: All data remains on your machine
-- **Encryption**: Screenshots encrypted with AES before database storage
-- **Key Management**: Separate encryption key file for data security
-- **Minimal Network**: Only API calls to Google Gemini for AI responses
-- **No Telemetry**: No data collection or tracking
+- **UI/Frontend**: CustomTkinter (modern theming and widgets for Python GUIs)
+- **API/Backend**: FastAPI (async Python web framework) + Uvicorn (ASGI server)
+- **AI**: Google Gemini 2.5 Flash Lite via `google-generativeai`
+- **RAG**: Chroma (persistent local vector DB) + sentence-transformers (embeddings)
+- **Data**: CSV-based per-game knowledge; SQLite for screenshots; Fernet for encryption
+- **System**: psutil + pywin32 for Windows process/window info; Pillow for imaging
 
-## 🤝 Contributing
+Notes:
+- The embedding model is configurable; by default we use a sentence-transformers model suitable for local inference. The system can be switched to a different embedder (e.g., Mistral embeddings) with minor changes in `vector_service.py`.
+- The persona and grounding behavior are controlled by `PROMPTS.txt` so Gemini cites sources from retrieved snippets and focuses answers on gaming topics.
 
-We welcome contributions! Here's how you can help:
+## How Components Work Together
 
-### Development Setup
+1. The overlay sends chat requests to the backend.
+2. The backend detects the current game and queries Chroma for relevant snippets (wiki, YouTube description, forum).
+3. Retrieved snippets are added to the prompt to ground Gemini’s response.
+4. If a screenshot is provided, it’s included as a multimodal input to Gemini for visual context.
+5. The overlay displays a typing indicator while waiting and distinguishes user vs assistant messages for readability.
 
-1. **Fork the repository** and clone your fork
-2. **Install dependencies**: `uv sync`
-3. **Create a feature branch**: `git checkout -b feature/your-feature-name`
-4. **Set up your environment**: Copy `.env.example` to `.env` and add your API keys
+## Security & Privacy
 
-### Code Style & Standards
+- Local-first design: screenshots, vectors, and CSVs are stored on your machine
+- Encrypted screenshot blobs at rest using Fernet (AES)
+- API key managed locally via the settings UI and `.env` persistence
+- No telemetry or external data collection
 
-- **Python**: Follow PEP 8 style guidelines
-- **Imports**: Use absolute imports where possible
-- **Documentation**: Add docstrings to new functions and classes
-- **Type Hints**: Use type hints for function parameters and returns
+## Pixly Quick Start Guide 
 
-### Areas for Contribution
 
-- **🎮 Gaming Knowledge**: Expand the AI's gaming expertise
-- **🔧 New Features**: Add new screenshot analysis capabilities
-- **🎨 UI/UX**: Improve the interface design and user experience
-- **🔒 Security**: Enhance encryption and privacy features
-- **📱 Cross-platform**: Add support for macOS and Linux
-- **🧪 Testing**: Add unit tests and integration tests
-- **📚 Documentation**: Improve code documentation and guides
+### 📋 Prerequisites
+<div>
 
-### Pull Request Process
+<table>
+<tr>
+<td align="center" width="25%">
 
-1. **Test your changes** thoroughly
-2. **Update documentation** if needed
-3. **Submit a pull request** with a clear description
-4. **Respond to feedback** during the review process
+**🐍 Python 3.11+**
+```bash
+python --version
+```
 
-## 🐛 Troubleshooting
+</td>
+<td align="center" width="25%">
 
-### Common Issues
+**🪟 Windows 10/11**
+```bash
+node --version
+```
 
-**Backend won't start:**
-- Check if port 8000 is available
-- Verify your Google API key in `.env`
-- Ensure all dependencies are installed with `uv sync`
+</td>
+<td align="center" width="25%">
 
-**Frontend overlay not appearing:**
-- Try the hotkey `Ctrl+Alt+M`
-- Check if the backend is running first
-- Verify Windows permissions for screen capture
+**⚡ uv Package Manager**
 
-**Screenshots not capturing:**
-- Ensure the application has necessary Windows permissions
-- Check the screenshot settings in the UI
-- Verify the encryption key was generated correctly
+```bash
+pip install uv
+```
+</td>
 
-## 📄 License
+<td align="center" width="25%">
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**🔧 Git**
+```bash
+git --version
+```
 
-## 🙏 Acknowledgments
+</td>
+</tr>
+</table>
+</div>
 
-- **Google Gemini** for AI capabilities
-- **CustomTkinter** for modern GUI components
-- **FastAPI** for robust backend framework
-- **Hacktoberfest** community for open source collaboration
+### Manual Setup 
+1. Clone the repository : 
+```bash 
+git clone https://github.com/BrataBuilds/hacktoberfest
+cd hacktoberfest
+```
+2. Install uv package manager 
+```bash 
+pip install uv
+# or
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+3. Install dependencies 
+```bash
+uv sync
+```
+4. Set up environment variables : 
+   1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+   2. Create a new API key
+   3. Add to `.env`:
+```bash
+GEMINI_API_KEY=your_gemini_key_here
+```
 
-## 📧 Support
+1. Make a folder called `vector_db`
 
-If you encounter any issues or have questions:
+2. Start the application, Create two powershell terminals 
 
-1. **Check the troubleshooting section** above
-2. **Search existing issues** in the repository
-3. **Create a new issue** with detailed information
-4. **Join our community discussions** for help and tips
+Terminal 1 - Start Backend:
+```bash
+uv run run.py
+```
+EWait for the backend to start then in Terminal 2 - Start Frontend:
+```bash 
+uv run overlay.py
+```
 
----
+## License
 
-**Happy Gaming with Pixly! 🎮✨**
+MIT License — see [LICENSE](LICENSE).
+
+## Acknowledgments
+
+- Google Gemini for AI capabilities
+- CustomTkinter for modern GUI components
+- FastAPI for a robust backend framework
+- The Hacktoberfest community for open-source collaboration

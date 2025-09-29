@@ -1,7 +1,7 @@
 [project]
-name = "hacktober-fest"
+name = "Hacktober-Fest-2025-Pixly"
 version = "0.1.0"
-description = "Add your description here"
+description = "Pixly is an AI game assistant overlay that helps you answers queries about a game without needing to leave it."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -1,3 +1,4 @@
+"""All backend endpoints exist here"""
 from fastapi import FastAPI, HTTPException
 import os
 import uvicorn
@@ -30,6 +31,7 @@ class ApiKeyRequest(BaseModel):
 async def chat(message: ChatMessage):
     return await chat_with_gemini(message.message, message.image_data)
 
+# Dummy functions to test functionality,, carry no use
 @app.get("/taskA")
 def run_task_a():
     return {"status": "ok", "message": "Task A executed"}

@@ -1,12 +1,10 @@
 import os
 import chromadb
 from chromadb.config import Settings
-from sentence_transformers import SentenceTransformer
-from typing import List, Dict, Optional, Tuple
-import json
+from typing import List, Dict, Optional
 import uuid
 from .knowledge_manager import process_game_knowledge
-
+from sentence_transformers import SentenceTransformer
 class VectorService:
     def __init__(self, vector_db_dir: str = "vector_db"):
         """Initialize vector service with Chroma and Mistral embeddings."""
@@ -21,7 +19,7 @@ class VectorService:
         # Initialize Chroma client
         self._init_chroma_client()
         
-        # Initialize embedding model
+        # Initialize embedding client
         self._init_embedding_model()
     
     def _init_chroma_client(self):
@@ -40,10 +38,10 @@ class VectorService:
             self.chroma_client = None
     
     def _init_embedding_model(self):
-        """Initialize Mistral embedding model."""
+        """Initialize Mistral client for embeddings using API key."""
         try:
-            # Using a lightweight model for now - can be changed to Mistral later
-            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            # api_key = os.getenv('MISTRAL_API_KEY')
+            self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
             print("Embedding model initialized successfully")
         except Exception as e:
             print(f"Error initializing embedding model: {e}")

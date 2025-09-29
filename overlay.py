@@ -1,3 +1,5 @@
+"""Main frontend overlay, made using custom Tkinter"""
+
 import sys
 import customtkinter as ctk
 import requests

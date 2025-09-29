@@ -1,6 +1,5 @@
 import os
 import sqlite3
-import base64
 import hashlib
 from datetime import datetime
 import threading
@@ -10,7 +9,6 @@ import win32gui
 import win32process
 from PIL import ImageGrab
 from cryptography.fernet import Fernet
-import json
 
 class ScreenshotCapture:
     def __init__(self, db_path="screenshots.db", interval=30):

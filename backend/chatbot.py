@@ -1,3 +1,4 @@
+""" Includes gemini chatbot integration"""
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv

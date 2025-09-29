@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
 """
-Test script for the game knowledge base system.
-This script helps test the complete implementation.
+Test script to test the game knowledge base system and some API endpoints
 """
 
 import requests
@@ -38,10 +36,10 @@ def main():
     print("\n1. Testing server connection...")
     result = test_api_endpoint("/games/list")
     if result.get("status_code") == 200:
-        print("✅ Server is running")
+        print("Server is running")
     else:
-        print("❌ Server is not running. Please start the server first:")
-        print("   python -m backend.backend")
+        print("Server is not running. Please start the server first:")
+        print("uv run run.py")
         return
     
     # Test 2: List available games
@@ -49,12 +47,12 @@ def main():
     result = test_api_endpoint("/games/list")
     if result.get("status_code") == 200:
         games = result["response"]
-        print(f"✅ Available games:")
-        print(f"   Detection games: {games.get('detection_games', [])}")
-        print(f"   CSV games: {games.get('csv_games', [])}")
-        print(f"   Vector games: {games.get('vector_games', [])}")
+        print(f"Available games:")
+        print(f"Detection games: {games.get('detection_games', [])}")
+        print(f"CSV games: {games.get('csv_games', [])}")
+        print(f"Vector games: {games.get('vector_games', [])}")
     else:
-        print(f"❌ Failed to list games: {result}")
+        print(f"Failed to list games: {result}")
     
     # Test 3: Validate Minecraft CSV
     print("\n3. Testing Minecraft CSV validation...")
@@ -62,11 +60,11 @@ def main():
     if result.get("status_code") == 200:
         validation = result["response"]
         if validation.get("is_valid"):
-            print("✅ Minecraft CSV is valid")
+            print("Minecraft CSV is valid")
         else:
-            print(f"❌ Minecraft CSV validation failed: {validation.get('errors', [])}")
+            print(f"Minecraft CSV validation failed: {validation.get('errors', [])}")
     else:
-        print(f"❌ Failed to validate CSV: {result}")
+        print(f"Failed to validate CSV: {result}")
     
     # Test 4: Process Minecraft knowledge
     print("\n4. Processing Minecraft knowledge...")
@@ -74,10 +72,10 @@ def main():
     result = test_api_endpoint("/games/minecraft/knowledge/process", "POST")
     if result.get("status_code") == 200:
         process_result = result["response"]
-        print(f"✅ Successfully processed Minecraft knowledge")
-        print(f"   Stats: {process_result.get('stats', {})}")
+        print(f"Successfully processed Minecraft knowledge")
+        print(f"Stats: {process_result.get('stats', {})}")
     else:
-        print(f"❌ Failed to process knowledge: {result}")
+        print(f"Failed to process knowledge: {result}")
         return
     
     # Test 5: Search Minecraft knowledge
@@ -97,13 +95,13 @@ def main():
         result = test_api_endpoint("/games/minecraft/knowledge/search", "POST", search_data)
         if result.get("status_code") == 200:
             search_result = result["response"]
-            print(f"   ✅ Found {search_result.get('total_results', 0)} results")
+            print(f"Found {search_result.get('total_results', 0)} results")
             for i, res in enumerate(search_result.get('results', [])[:2], 1):
-                print(f"      {i}. {res.get('metadata', {}).get('title', 'Unknown')}")
-                print(f"         Source: {res.get('metadata', {}).get('content_type', 'unknown')}")
-                print(f"         Content: {res.get('content', '')[:100]}...")
+                print(f"{i}. {res.get('metadata', {}).get('title', 'Unknown')}")
+                print(f"Source: {res.get('metadata', {}).get('content_type', 'unknown')}")
+                print(f"Content: {res.get('content', '')[:100]}...")
         else:
-            print(f"   ❌ Search failed: {result}")
+            print(f"Search failed: {result}")
     
     # Test 6: Test game detection
     print("\n6. Testing game detection...")
@@ -120,9 +118,9 @@ def main():
         if result.get("status_code") == 200:
             detect_result = result["response"]
             detected_game = detect_result.get("detected_game")
-            print(f"   ✅ Detected game: {detected_game}")
+            print(f"Detected game: {detected_game}")
         else:
-            print(f"   ❌ Detection failed: {result}")
+            print(f"Detection failed: {result}")
     
     # Test 7: Test enhanced chat
     print("\n7. Testing enhanced chat...")
@@ -139,9 +137,9 @@ def main():
         if result.get("status_code") == 200:
             chat_result = result["response"]
             response_text = chat_result.get("response", "")
-            print(f"   ✅ Response: {response_text[:200]}...")
+            print(f"Response: {response_text[:200]}...")
         else:
-            print(f"   ❌ Chat failed: {result}")
+            print(f"Chat failed: {result}")
     
     print("\n" + "=" * 50)
     print("🎉 Testing completed!")
