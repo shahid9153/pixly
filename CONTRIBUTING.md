@@ -37,12 +37,13 @@ If you have any questions regarding contributing to this repository please conta
 #### In game control : 
 Add the ability for the agent to control the game and play the game for you and perform repetitive tasks, such as : `Build a small house for me in minecraft.` or `Automatically plant and regrow my crops while I afk`
 
+#### Cross platform compatibility :
+Reliance on the win32 api for taking screenshots means we can't transition to a different platform, and are stuck with Windows for now.
+In the future we may wanna add cross platform compatibility with Linux.
+
 ## Known Bugs and Issues : 🪲
 
-1. Overlay hangs and then crashes when turning off the  enable setting.
-2. Diagnose `knowledge_manager.py`, it is unable to scrape the given webpages. Possibly has to do with anti-bot scraping measures.
-3. Diagnose `game_detection.py`, always reports the current game being played as minecraft.
+1. Overlay hangs and then crashes when turning off the enable screenshots setting.
+2. Diagnose `knowledge_manager.py`, it is unable to scrape the given webpages. Returns a `403: Forbidden Error`, Possibly has to do with anti-bot anti-web_scraping measures.
+3. Diagnose `game_detection.py`, sometimes it always reports the current game being played as minecraft.
 
-
-
-2. Reliance on the win32 api means we can't transition to 
