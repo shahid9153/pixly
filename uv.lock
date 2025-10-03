@@ -700,7 +700,7 @@ wheels = [
 ]
 
 [[package]]
-name = "hacktober-fest"
+name = "hacktober-fest-2025-pixly"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

@@ -4,13 +4,14 @@ Pixly - Your AI Gaming Assistant 🎮
 </h1>
 </div>
 
-Pixly is a desktop gaming assistant that combines AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you’re playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
+Pixly is a desktop overlay that acts as your gaming assitant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you’re playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
 
 - [What Pixly Does](#what-pixly-does)
+- [Contributing, Setup and Install](#contributing-setup-and-install)
 - [Architecture Overview](#architecture-overview)
   - [1) UI Overlay (`overlay.py`)](#1-ui-overlay-overlaypy)
   - [2) Backend API (`backend/`)](#2-backend-api-backend)
@@ -22,10 +23,6 @@ Pixly is a desktop gaming assistant that combines AI chat with automated, privac
 - [Technology Stack](#technology-stack)
 - [How Components Work Together](#how-components-work-together)
 - [Security \& Privacy](#security--privacy)
-- [Pixly Quick Start Guide](#pixly-quick-start-guide)
-  - [📋 Prerequisites](#-prerequisites)
-  - [Quick Setup](#quick-setup)
-  - [Manual Setup](#manual-setup)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -39,6 +36,11 @@ Pixly is a desktop gaming assistant that combines AI chat with automated, privac
 - Optional screenshot-powered context for visual analysis
 - RAG pipeline over per-game CSV knowledge with local vector search (Chroma)
 - Modern desktop overlay for chatting, settings, and screenshot gallery
+
+## Contributing, Setup and Install
+
+- For Contributing Visit [CONTRIBUTING.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/CONTRIBUTING.md)
+- For Setup and Installation visit [INSTALL.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/INSTALL.md)
 
 ## Architecture Overview
 
@@ -176,100 +178,6 @@ Notes:
 - Encrypted screenshot blobs at rest using Fernet (AES)
 - API key managed locally via the settings UI and `.env` persistence
 - No telemetry or external data collection
-
-## Pixly Quick Start Guide 
-
-
-### 📋 Prerequisites
-<div>
-
-<table>
-<tr>
-<td align="center" width="25%">
-
-**🐍 Python 3.11+**
-```bash
-python --version
-```
-
-</td>
-<td align="center" width="25%">
-
-**🪟 Windows 10/11**
-```bash
-node --version
-```
-
-</td>
-<td align="center" width="25%">
-
-**⚡ uv Package Manager**
-
-```bash
-pip install uv
-```
-</td>
-
-<td align="center" width="25%">
-
-**🔧 Git**
-```bash
-git --version
-```
-
-</td>
-</tr>
-</table>
-</div>
-
-
-### Quick Setup
-
-1. Clone the repository : 
-```bash 
-git clone https://github.com/BrataBuilds/hacktoberfest
-cd hacktoberfest
-```
-2. Open a powershell terminal as administrator and run the setup.bat file.
-```bash
-.\setup.bat
-```
-### Manual Setup 
-1. Clone the repository : 
-```bash 
-git clone https://github.com/BrataBuilds/hacktoberfest
-cd hacktoberfest
-```
-1. Install uv package manager 
-```bash 
-pip install uv
-# or
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-1. Install dependencies 
-```bash
-uv sync
-```
-1. Set up environment variables : 
-   1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-   2. Create a new API key
-   3. Add to `.env`:
-```bash
-GEMINI_API_KEY=your_gemini_key_here
-```
-
-1. Make a folder called `vector_db`
-
-2. Start the application, Create two powershell terminals 
-
-Terminal 1 - Start Backend:
-```bash
-uv run run.py
-```
-EWait for the backend to start then in Terminal 2 - Start Frontend:
-```bash 
-uv run overlay.py
-```
 
 ## License
 

@@ -7,7 +7,7 @@ from .knowledge_manager import process_game_knowledge
 from sentence_transformers import SentenceTransformer
 class VectorService:
     def __init__(self, vector_db_dir: str = "vector_db"):
-        """Initialize vector service with Chroma and Mistral embeddings."""
+        """Initialize vector service with Chroma and SentenceTransformer embeddings."""
         self.vector_db_dir = vector_db_dir
         self.embedding_model = None
         self.chroma_client = None

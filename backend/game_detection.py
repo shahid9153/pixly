@@ -9,7 +9,7 @@ class GameDetection:
         # Game detection mappings - process names and keywords
         self.game_mappings = {
             'minecraft': {
-                'processes': ['javaw.exe', 'java.exe', 'minecraft.exe'],
+                'processes': ['minecraft.exe'],
                 'keywords': ['minecraft', 'mc', 'mojang'],
                 'window_titles': ['minecraft', 'minecraft launcher', 'minecraft: java edition']
             },
