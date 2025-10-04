@@ -1,5 +1,51 @@
 <div align="center">
 <h1>
+Pixly - Your AI Gaming## 🎮 What Pixly Does
+
+- 🤖 Intelligent, game-focused chat using Google## 📚 Knowledge Base & Data Flow
+
+Pixly's knowledge is curated per game via CSV files that live in `games_info/`. The CSV schema is simple and contributor-friendly:mini with a "Game Expert" system prompt
+- 🎯 Contextual help based on your active game (process detection and/or user message)
+- 📸 Optional screenshot-powered context for visual analysis
+- 🔍 RAG pipeline over per-game CSV knowledge with local vector search (Chroma)
+- 💻 Modern desktop overlay for chatting, settings, and screenshot gallery
+
+## 🤝 Contributing, Setup and Install
+
+**We welcome Hacktoberfest 2025 contributors!** Whether you're adding new games to the knowledge base, improving the UI, or enhancing AI capabilities, your contributions matter.
+
+- 📖 For Contributing Visit [CONTRIBUTING.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/CONTRIBUTING.md)
+- ⚙️ For Setup and Installation visit [INSTALL.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/INSTALL.md)
+
+### � Hacktoberfest 2025 - How to Contribute
+
+This project is participating in **Hacktoberfest 2025**! Here are some ways you can contribute:
+
+1. **Add Game Knowledge**: Contribute CSV files with game wikis, YouTube videos, and forum links
+2. **Improve Documentation**: Enhance README, add tutorials, or create guides
+3. **Fix Bugs**: Check our issues and help resolve reported bugs
+4. **Add Features**: Implement new features like support for more games or UI improvements
+5. **Optimize Performance**: Improve RAG retrieval, vector search, or screenshot handling
+
+**Note**: Make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md) and contribution guidelines!🎮
+</h1>
+
+![Hacktoberfest 2025](https://img.shields.io/badge/Hacktoberfest-2025-blueviolet.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.11+-green.svg)
+![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
+![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red.svg)
+
+</div>
+
+> **🎃 Hacktoberfest 2025 Participant** | Join us in making gaming more accessible with AI!
+
+## 📋 Table of Contents
+
+Pixly is a desktop overlay that acts as your gaming assitant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you're playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources."center">
+<h1>
 Pixly - Your AI Gaming Assistant 🎮
 </h1>
 </div>
@@ -42,7 +88,7 @@ Pixly is a desktop overlay that acts as your gaming assitant, combining AI chat 
 - For Contributing Visit [CONTRIBUTING.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/CONTRIBUTING.md)
 - For Setup and Installation visit [INSTALL.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/INSTALL.md)
 
-## Architecture Overview
+## 🏗️ Architecture Overview
 
 Pixly is organized into three main layers: UI Overlay, Backend API, and AI/RAG services, all running locally.
 
@@ -101,7 +147,7 @@ Processing pipeline per game:
 
 Vector DB collections are organized by game and source type, e.g. `minecraft_wiki`, `minecraft_youtube`, `minecraft_forum`.
 
-## Game Detection
+## 🎯 Game Detection
 
 Pixly uses a layered strategy to infer the current game:
 - **Process Detection**: Scans running processes for known executables
@@ -110,7 +156,7 @@ Pixly uses a layered strategy to infer the current game:
 
 The detection result is passed into the RAG layer to scope retrieval to the active game’s knowledge base.
 
-## API Surface (Selected)
+## 🔌 API Surface (Selected)
 
 - `POST /chat`: Chat with Gemini; auto-detects game; augments prompt with retrieved snippets
 - `POST /screenshots/start?interval=30`: Start periodic capture
@@ -127,7 +173,7 @@ The detection result is passed into the RAG layer to scope retrieval to the acti
 - `GET /settings/api-key`: Report whether the Gemini API key is configured (masked preview)
 - `POST /settings/api-key`: Persist API key to `.env` and live-reconfigure the chatbot
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 Hacktober Fest/
@@ -151,7 +197,7 @@ Hacktober Fest/
 └── README.md                     # Project documentation
 ```
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 - **UI/Frontend**: CustomTkinter (modern theming and widgets for Python GUIs)
 - **API/Backend**: FastAPI (async Python web framework) + Uvicorn (ASGI server)
@@ -164,7 +210,7 @@ Notes:
 - The embedding model is configurable; by default we use a sentence-transformers model suitable for local inference. The system can be switched to a different embedder (e.g., Mistral embeddings) with minor changes in `vector_service.py`.
 - The persona and grounding behavior are controlled by `PROMPTS.txt` so Gemini cites sources from retrieved snippets and focuses answers on gaming topics.
 
-## How Components Work Together
+## ⚙️ How Components Work Together
 
 1. The overlay sends chat requests to the backend.
 2. The backend detects the current game and queries Chroma for relevant snippets (wiki, YouTube description, forum).
@@ -172,20 +218,35 @@ Notes:
 4. If a screenshot is provided, it’s included as a multimodal input to Gemini for visual context.
 5. The overlay displays a typing indicator while waiting and distinguishes user vs assistant messages for readability.
 
-## Security & Privacy
+## 🔒 Security & Privacy
 
 - Local-first design: screenshots, vectors, and CSVs are stored on your machine
 - Encrypted screenshot blobs at rest using Fernet (AES)
 - API key managed locally via the settings UI and `.env` persistence
 - No telemetry or external data collection
 
-## License
+## 📄 License
 
 MIT License — see [LICENSE](LICENSE).
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - Google Gemini for AI capabilities
 - CustomTkinter for modern GUI components
 - FastAPI for a robust backend framework
-- The Hacktoberfest community for open-source collaboration
+- The Hacktoberfest 2025 community for open-source collaboration
+- All our amazing contributors who make this project possible!
+
+---
+
+<div align="center">
+
+**Made with ❤️ for Hacktoberfest 2025**
+
+[![Hacktoberfest](https://img.shields.io/badge/Hacktoberfest-Friendly-orange.svg)](https://hacktoberfest.com)
+[![GitHub Issues](https://img.shields.io/github/issues/BrataBuilds/hacktoberfest.svg)](https://github.com/BrataBuilds/hacktoberfest/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/BrataBuilds/hacktoberfest.svg)](https://github.com/BrataBuilds/hacktoberfest/pulls)
+
+If you find this project helpful, please ⭐ star it on GitHub!
+
+</div>
