@@ -2,6 +2,8 @@
 This document contains the list of issues, suggestions and improvements that can be added to this project and a proper guide on how to contribute to the project.
 
 ## Registration 
+To be eligible for MLSA X HACKTOBERFEST: 
+[Star this repo](https://github.com/keploy/keploy)
 [Register here for MLSAKKIIT](https://register.mlsakiit.com/)
 [Register on HacktoberFest](https://hacktoberfest.com/auth/)
 

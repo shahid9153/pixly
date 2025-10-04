@@ -11,32 +11,29 @@ Pixly - Your AI Gaming Assistant 🎮
 
 </div>
 
-To be eligible for MLSA X HACKTOBERFEST: 
-Register here: https://register.mlsakiit.com/
-Star this repo: https://github.com/keploy/keploy
-
-> **🎃 Hacktoberfest 2025 Participant** | Join us in making gaming more accessible with AI!
 
 Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you're playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
 
+**🎃 Hacktoberfest 2025 Participant** | Join us in making gaming more accessible with AI! Also make sure to [star this repo](https://github.com/keploy/keploy).
 ## 📋 Table of Contents
 
-- [What Pixly Does](#-what-pixly-does)
-- [Contributing, Setup and Install](#-contributing-setup-and-install)
-  - [Hacktoberfest 2025 - How to Contribute](#-hacktoberfest-2025---how-to-contribute)
-- [Architecture Overview](#️-architecture-overview)
+- [📋 Table of Contents](#-table-of-contents)
+- [🎮 What Pixly Does](#-what-pixly-does)
+- [🤝 Contributing, Setup and Install](#-contributing-setup-and-install)
+  - [🎃 Hacktoberfest 2025 - How to Contribute](#-hacktoberfest-2025---how-to-contribute)
+- [🏗️ Architecture Overview](#️-architecture-overview)
   - [1) UI Overlay (`overlay.py`)](#1-ui-overlay-overlaypy)
   - [2) Backend API (`backend/`)](#2-backend-api-backend)
-  - [3) AI & RAG Layer](#3-ai--rag-layer)
-- [Knowledge Base & Data Flow](#-knowledge-base--data-flow)
-- [Game Detection](#-game-detection)
-- [API Surface (Selected)](#-api-surface-selected)
-- [Project Structure](#-project-structure)
-- [Technology Stack](#️-technology-stack)
-- [How Components Work Together](#️-how-components-work-together)
-- [Security & Privacy](#-security--privacy)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)
+  - [3) AI \& RAG Layer](#3-ai--rag-layer)
+- [📚 Knowledge Base \& Data Flow](#-knowledge-base--data-flow)
+- [🎯 Game Detection](#-game-detection)
+- [🔌 API Surface (Selected)](#-api-surface-selected)
+- [📁 Project Structure](#-project-structure)
+- [🛠️ Technology Stack](#️-technology-stack)
+- [⚙️ How Components Work Together](#️-how-components-work-together)
+- [🔒 Security \& Privacy](#-security--privacy)
+- [📄 License](#-license)
+- [🙏 Acknowledgments](#-acknowledgments)
 
 ## 🎮 What Pixly Does
 
