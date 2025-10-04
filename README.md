@@ -11,6 +11,10 @@ Pixly - Your AI Gaming Assistant 🎮
 
 </div>
 
+To be eligible for MLSA X HACKTOBERFEST: 
+Register here: https://register.mlsakiit.com/
+Star this repo: https://github.com/keploy/keploy
+
 > **🎃 Hacktoberfest 2025 Participant** | Join us in making gaming more accessible with AI!
 
 Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you're playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
