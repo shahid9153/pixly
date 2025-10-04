@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  pixly-backend:
+    build: .
+    container_name: pixly-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Add your Gemini API key here or use .env file
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-your_api_key_here}
+    volumes:
+      - ./vector_db:/app/vector_db
+      - ./games_info:/app/games_info:ro
+    restart: unless-stopped
+    networks:
+      - pixly-network
+
+networks:
+  pixly-network:
+    driver: bridge
+
+
+# ONLY for backend API development/testing
+
