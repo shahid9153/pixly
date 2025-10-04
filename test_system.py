@@ -90,7 +90,8 @@ def main():
         print(f"\n   Searching: '{query}'")
         search_data = {
             "query": query,
-            "limit": 3
+            "limit": 3,
+            "game_namme":"Minecraft"
         }
         result = test_api_endpoint("/games/minecraft/knowledge/search", "POST", search_data)
         if result.get("status_code") == 200:

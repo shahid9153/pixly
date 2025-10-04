@@ -89,7 +89,7 @@ def main():
     for query in search_queries:
         print(f"\n   Searching: '{query}'")
         search_data = {
-            "game_name": "Black_Myth_Wukong",
+            "game_name": "Black Myth Wukong",
             "query": query,
             "limit": 3
         }
@@ -107,9 +107,9 @@ def main():
     # Test 6: Test game detection
     print("\n6. Testing game detection...")
     test_messages = [
-        "I'm playing Black_Myth_Wukong and need help with this level",
+        "I'm playing Black Myth Wukong and need help with this level",
         "How do I beat this boss in Dark Souls?",
-        "What's the best strategy for building in Black_Myth_Wukong?"
+        "What's the best strategy for building in Black Myth Wukong?"
     ]
     
     for message in test_messages:
