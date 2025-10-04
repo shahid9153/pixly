@@ -22,8 +22,13 @@ class GameDetection:
                 'processes': ['darksouls3.exe', 'dark souls iii.exe'],
                 'keywords': ['dark souls 3', 'darksouls3', 'ds3'],
                 'window_titles': ['dark souls iii', 'darksouls3']
-            }
+            },
+            'black_myth_wukong': {
+            'processes': ['b1.exe', 'b1-win64-shipping.exe'],
+            'keywords': ['black myth wukong', 'blackmythwukong', 'bmw'],
+            'window_titles': ['black myth: wukong', 'black myth wukong']
         }
+}
         
         # Cache for detected game
         self._detected_game = None
