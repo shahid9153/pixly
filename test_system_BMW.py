@@ -54,45 +54,46 @@ def main():
     else:
         print(f"Failed to list games: {result}")
     
-    # Test 3: Validate Minecraft CSV
-    print("\n3. Testing Minecraft CSV validation...")
-    result = test_api_endpoint("/games/minecraft/knowledge/validate")
+    # Test 3: Validate Black Myth Wukong CSV
+    print("\n3. Testing BMW CSV validation...")
+    result = test_api_endpoint("/games/Black_Myth_Wukong/knowledge/validate")
     if result.get("status_code") == 200:
         validation = result["response"]
         if validation.get("is_valid"):
-            print("Minecraft CSV is valid")
+            print("Black Myth Wukong CSV is valid")
         else:
-            print(f"Minecraft CSV validation failed: {validation.get('errors', [])}")
+            print(f"Black Myth Wukong CSV validation failed: {validation.get('errors', [])}")
     else:
         print(f"Failed to validate CSV: {result}")
     
-    # Test 4: Process Minecraft knowledge
-    print("\n4. Processing Minecraft knowledge...")
+    # Test 4: Process Black Myth Wukong knowledge
+    print("\n4. Processing BMW knowledge...")
     print("   This may take a few minutes as it extracts content from URLs...")
-    result = test_api_endpoint("/games/minecraft/knowledge/process", "POST")
+    result = test_api_endpoint("/games/Black_Myth_Wukong/knowledge/process", "POST")
     if result.get("status_code") == 200:
         process_result = result["response"]
-        print(f"Successfully processed Minecraft knowledge")
+        print(f"Successfully processed BMW knowledge")
         print(f"Stats: {process_result.get('stats', {})}")
     else:
         print(f"Failed to process knowledge: {result}")
         return
     
-    # Test 5: Search Minecraft knowledge
+    # Test 5: Search Black Myth Wukong knowledge
     print("\n5. Testing knowledge search...")
     search_queries = [
-        "How to make redstone circuits?",
-        "What are the best enchantments?",
-        "How to find villagers?"
+        "1. What are the most effective combat strategies for defeating bosses in Black Myth: Wukong?",
+        "2. How can players best utilise Wukong’s transformation abilities to explore hidden areas or solve puzzles?",
+        "3. Which weapons, skills, or upgrades provide the optimal balance between damage and mobility in the game?",
     ]
     
     for query in search_queries:
         print(f"\n   Searching: '{query}'")
         search_data = {
+            "game_name": "Black_Myth_Wukong",
             "query": query,
             "limit": 3
         }
-        result = test_api_endpoint("/games/minecraft/knowledge/search", "POST", search_data)
+        result = test_api_endpoint("/games/Black_Myth_Wukong/knowledge/search", "POST", search_data)
         if result.get("status_code") == 200:
             search_result = result["response"]
             print(f"Found {search_result.get('total_results', 0)} results")
@@ -106,9 +107,9 @@ def main():
     # Test 6: Test game detection
     print("\n6. Testing game detection...")
     test_messages = [
-        "I'm playing Minecraft and need help with redstone",
+        "I'm playing Black_Myth_Wukong and need help with this level",
         "How do I beat this boss in Dark Souls?",
-        "What's the best strategy for building in Minecraft?"
+        "What's the best strategy for building in Black_Myth_Wukong?"
     ]
     
     for message in test_messages:
@@ -125,9 +126,9 @@ def main():
     # Test 7: Test enhanced chat
     print("\n7. Testing enhanced chat...")
     chat_messages = [
-        "I need help with redstone in Minecraft",
-        "What are the best enchantments for my sword?",
-        "How do I build an automatic farm?"
+        "What are the locations and methods to farm upgrade materials for Wukong's staff in the early and mid-game?",
+        "How can players effectively chain combos to stagger elite enemies without taking heavy damage?",
+        "Which environment hazards or traps can be exploited to defeat bosses or large enemy groups more easily?",
     ]
     
     for message in chat_messages:
