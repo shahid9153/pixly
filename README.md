@@ -1,10 +1,42 @@
 <div align="center">
 <h1>
-Pixly - Your AI Gaming## 🎮 What Pixly Does
+Pixly - Your AI Gaming Assistant 🎮
+</h1>
 
-- 🤖 Intelligent, game-focused chat using Google## 📚 Knowledge Base & Data Flow
+![Hacktoberfest 2025](https://img.shields.io/badge/Hacktoberfest-2025-blueviolet.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.11+-green.svg)
+![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
+![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red.svg)
 
-Pixly's knowledge is curated per game via CSV files that live in `games_info/`. The CSV schema is simple and contributor-friendly:mini with a "Game Expert" system prompt
+</div>
+
+> **🎃 Hacktoberfest 2025 Participant** | Join us in making gaming more accessible with AI!
+
+Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you're playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
+
+## 📋 Table of Contents
+
+- [What Pixly Does](#-what-pixly-does)
+- [Contributing, Setup and Install](#-contributing-setup-and-install)
+  - [Hacktoberfest 2025 - How to Contribute](#-hacktoberfest-2025---how-to-contribute)
+- [Architecture Overview](#️-architecture-overview)
+  - [1) UI Overlay (`overlay.py`)](#1-ui-overlay-overlaypy)
+  - [2) Backend API (`backend/`)](#2-backend-api-backend)
+  - [3) AI & RAG Layer](#3-ai--rag-layer)
+- [Knowledge Base & Data Flow](#-knowledge-base--data-flow)
+- [Game Detection](#-game-detection)
+- [API Surface (Selected)](#-api-surface-selected)
+- [Project Structure](#-project-structure)
+- [Technology Stack](#️-technology-stack)
+- [How Components Work Together](#️-how-components-work-together)
+- [Security & Privacy](#-security--privacy)
+- [License](#-license)
+- [Acknowledgments](#-acknowledgments)
+
+## 🎮 What Pixly Does
+
+- 🤖 Intelligent, game-focused chat using Google Gemini with a "Game Expert" system prompt
 - 🎯 Contextual help based on your active game (process detection and/or user message)
 - 📸 Optional screenshot-powered context for visual analysis
 - 🔍 RAG pipeline over per-game CSV knowledge with local vector search (Chroma)
@@ -17,7 +49,7 @@ Pixly's knowledge is curated per game via CSV files that live in `games_info/`. 
 - 📖 For Contributing Visit [CONTRIBUTING.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/CONTRIBUTING.md)
 - ⚙️ For Setup and Installation visit [INSTALL.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/INSTALL.md)
 
-### � Hacktoberfest 2025 - How to Contribute
+### 🎃 Hacktoberfest 2025 - How to Contribute
 
 This project is participating in **Hacktoberfest 2025**! Here are some ways you can contribute:
 
@@ -27,66 +59,7 @@ This project is participating in **Hacktoberfest 2025**! Here are some ways you 
 4. **Add Features**: Implement new features like support for more games or UI improvements
 5. **Optimize Performance**: Improve RAG retrieval, vector search, or screenshot handling
 
-**Note**: Make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md) and contribution guidelines!🎮
-</h1>
-
-![Hacktoberfest 2025](https://img.shields.io/badge/Hacktoberfest-2025-blueviolet.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.11+-green.svg)
-![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
-![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red.svg)
-
-</div>
-
-> **🎃 Hacktoberfest 2025 Participant** | Join us in making gaming more accessible with AI!
-
-## 📋 Table of Contents
-
-Pixly is a desktop overlay that acts as your gaming assitant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you're playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources."center">
-<h1>
-Pixly - Your AI Gaming Assistant 🎮
-</h1>
-</div>
-
-Pixly is a desktop overlay that acts as your gaming assitant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you’re playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
-
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.11+-green.svg)
-![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
-
-- [What Pixly Does](#what-pixly-does)
-- [Contributing, Setup and Install](#contributing-setup-and-install)
-- [Architecture Overview](#architecture-overview)
-  - [1) UI Overlay (`overlay.py`)](#1-ui-overlay-overlaypy)
-  - [2) Backend API (`backend/`)](#2-backend-api-backend)
-  - [3) AI \& RAG Layer](#3-ai--rag-layer)
-- [Knowledge Base \& Data Flow](#knowledge-base--data-flow)
-- [Game Detection](#game-detection)
-- [API Surface (Selected)](#api-surface-selected)
-- [Project Structure](#project-structure)
-- [Technology Stack](#technology-stack)
-- [How Components Work Together](#how-components-work-together)
-- [Security \& Privacy](#security--privacy)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
-
-
-
-
-## What Pixly Does
-
-- Intelligent, game-focused chat using Google Gemini with a “Game Expert” system prompt
-- Contextual help based on your active game (process detection and/or user message)
-- Optional screenshot-powered context for visual analysis
-- RAG pipeline over per-game CSV knowledge with local vector search (Chroma)
-- Modern desktop overlay for chatting, settings, and screenshot gallery
-
-## Contributing, Setup and Install
-
-- For Contributing Visit [CONTRIBUTING.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/CONTRIBUTING.md)
-- For Setup and Installation visit [INSTALL.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/INSTALL.md)
+**Note**: Make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md) and contribution guidelines!
 
 ## 🏗️ Architecture Overview
 
@@ -123,9 +96,9 @@ Key modules:
 - Embeddings: sentence-transformers by default (configurable); text is chunked and embedded per content piece
 - Retrieval: top-k relevant chunks by cosine similarity; included as context in the prompt
 
-## Knowledge Base & Data Flow
+## 📚 Knowledge Base & Data Flow
 
-Pixly’s knowledge is curated per game via CSV files that live in `games_info/`. The CSV schema is simple and contributor-friendly:
+Pixly's knowledge is curated per game via CSV files that live in `games_info/`. The CSV schema is simple and contributor-friendly:
 
 ```
 wiki,wiki_desc,youtube,yt_desc,forum,forum_desc
@@ -143,7 +116,7 @@ Processing pipeline per game:
 2. Extract text from wiki and forum URLs; keep YouTube descriptions as-is
 3. Clean and chunk text into manageable segments (e.g., ~512 tokens)
 4. Generate embeddings for each chunk and persist into Chroma collections
-5. On chat, detect game and run a semantic search to retrieve top snippets, then ground Gemini’s response on those
+5. On chat, detect game and run a semantic search to retrieve top snippets, then ground Gemini's response on those
 
 Vector DB collections are organized by game and source type, e.g. `minecraft_wiki`, `minecraft_youtube`, `minecraft_forum`.
 
@@ -152,9 +125,9 @@ Vector DB collections are organized by game and source type, e.g. `minecraft_wik
 Pixly uses a layered strategy to infer the current game:
 - **Process Detection**: Scans running processes for known executables
 - **Screenshot Context**: Uses recent screenshot metadata (app/window) when available
-- **Manual Override**: Detects game mentions in the user’s message (e.g., “I’m playing Minecraft”)
+- **Manual Override**: Detects game mentions in the user's message (e.g., "I'm playing Minecraft")
 
-The detection result is passed into the RAG layer to scope retrieval to the active game’s knowledge base.
+The detection result is passed into the RAG layer to scope retrieval to the active game's knowledge base.
 
 ## 🔌 API Surface (Selected)
 
@@ -162,7 +135,7 @@ The detection result is passed into the RAG layer to scope retrieval to the acti
 - `POST /screenshots/start?interval=30`: Start periodic capture
 - `POST /screenshots/stop`: Stop capture
 - `GET /screenshots/recent?limit=10&application=...`: List recent screenshots (metadata)
-- `GET /screenshots/{id}`: Fetch a screenshot’s image data (base64)
+- `GET /screenshots/{id}`: Fetch a screenshot's image data (base64)
 - `DELETE /screenshots/{id}`: Delete a screenshot entry
 - `POST /games/detect`: Detect current game (optionally pass message for keyword hints)
 - `GET /games/list`: Enumerate detection-supported games, CSV-available games, and games with vectors
@@ -214,8 +187,8 @@ Notes:
 
 1. The overlay sends chat requests to the backend.
 2. The backend detects the current game and queries Chroma for relevant snippets (wiki, YouTube description, forum).
-3. Retrieved snippets are added to the prompt to ground Gemini’s response.
-4. If a screenshot is provided, it’s included as a multimodal input to Gemini for visual context.
+3. Retrieved snippets are added to the prompt to ground Gemini's response.
+4. If a screenshot is provided, it's included as a multimodal input to Gemini for visual context.
 5. The overlay displays a typing indicator while waiting and distinguishes user vs assistant messages for readability.
 
 ## 🔒 Security & Privacy
@@ -244,8 +217,8 @@ MIT License — see [LICENSE](LICENSE).
 **Made with ❤️ for Hacktoberfest 2025**
 
 [![Hacktoberfest](https://img.shields.io/badge/Hacktoberfest-Friendly-orange.svg)](https://hacktoberfest.com)
-[![GitHub Issues](https://img.shields.io/github/issues/BrataBuilds/hacktoberfest.svg)](https://github.com/BrataBuilds/hacktoberfest/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/BrataBuilds/hacktoberfest.svg)](https://github.com/BrataBuilds/hacktoberfest/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/MLSAKIIT/pixly.svg)](https://github.com/MLSAKIIT/pixly/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/MLSAKIIT/pixly.svg)](https://github.com/MLSAKIIT/pixly/pulls)
 
 If you find this project helpful, please ⭐ star it on GitHub!
 
