@@ -2,8 +2,8 @@
 This document contains the list of issues, suggestions and improvements that can be added to this project and a proper guide on how to contribute to the project.
 
 ## Registration 
-Link coming soon.
- <!-- mlsa kiit registration link and hacktober fest registration link. -->
+[Register here for MLSAKKIIT](https://register.mlsakiit.com/)
+[Register on HacktoberFest](https://hacktoberfest.com/auth/)
 
 ## Guildlines : 
 Adhere to [Hacktober Fest Guidlines](https://hacktoberfest.com/) and maintain common ettiquette of contributing to an open source project. 
@@ -32,6 +32,36 @@ If you have any questions regarding contributing to this repository please conta
 3. Add more entries about wikis, guides, youtube videos, forum posts about more games, especially single  player story based titles like `Elden Ring, Hollow Knight : Silksong, Black Myth: Wukong,Cyberpunk 2077`
 
 4. Add cross platform support, (change the win32 dependency to an alternative)
+
+5. Improve the project structure to better align with [best practices](https://github.com/zhanymkanov/fastapi-best-practices) when using FastAPI. The project already defines pydantic schemas. Also Example project structure. :
+```
+backend/
+│
+├── main.py                      # Entry point (FastAPI app)
+│
+├── routers/                     # Route definitions (API endpoints)
+│   ├── chat.py
+│   ├── screenshots.py
+│   ├── game_detection.py
+│   └── knowledge.py
+│
+├── schemas/                     # Pydantic models
+│   ├── chat.py
+│   ├── screenshot.py
+│   ├── game_detection.py
+│   └── knowledge.py
+│
+├── services/                    # Business logic / helper functions
+│   ├── chatbot.py
+│   ├── screenshot_service.py
+│   ├── knowledge_service.py
+│   └── vector_service.py
+│
+└── core/
+    ├── config.py                # Settings, env vars, constants
+    └── logger.py                # Central logging setup
+
+```
 
 ### Long term Goals :
 #### In game control : 
