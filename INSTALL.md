@@ -48,7 +48,7 @@ git --version
 1. Clone the repository : 
 ```bash 
 git clone https://github.com/MLSAKIIT/pixly.git
-cd hacktoberfest
+cd pixly
 ```
 2. Open a powershell terminal as administrator and run the setup.bat file.
 ```bash
@@ -58,7 +58,7 @@ cd hacktoberfest
 1. Clone the repository : 
 ```bash 
 git clone https://github.com/MLSAKIIT/pixly.git
-cd hacktoberfest
+cd pixly
 ```
 1. Install uv package manager 
 ```bash 
