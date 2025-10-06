@@ -47,8 +47,8 @@ Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat
 
 **We welcome Hacktoberfest 2025 contributors!** Whether you're adding new games to the knowledge base, improving the UI, or enhancing AI capabilities, your contributions matter.
 
-- 📖 For Contributing Visit [CONTRIBUTING.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/CONTRIBUTING.md)
-- ⚙️ For Setup and Installation visit [INSTALL.md](https://github.com/BrataBuilds/hacktoberfest/blob/main/INSTALL.md)
+- 📖 For Contributing Visit [CONTRIBUTING.md](https://github.com/MLSAKIIT/pixly/blob/main/CONTRIBUTING.md)
+- ⚙️ For Setup and Installation visit [INSTALL.md](https://github.com/MLSAKIIT/pixly/blob/main/INSTALL.md)
 
 ### 🎃 Hacktoberfest 2025 - How to Contribute
 
