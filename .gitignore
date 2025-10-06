@@ -13,3 +13,4 @@ wheels/
 *.json
 *.db
 vector_db/
+.coverage
