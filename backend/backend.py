@@ -19,7 +19,6 @@ class GameDetectionRequest(BaseModel):
     message: Optional[str] = None
 
 class KnowledgeSearchRequest(BaseModel):
-    game_name: str
     query: str
     content_types: Optional[List[str]] = None
     limit: Optional[int] = 5
