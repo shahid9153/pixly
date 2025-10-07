@@ -239,8 +239,8 @@ class KnowledgeManager:
                 time.sleep(1)  # Be respectful to servers
         
         print(f"Processed {len(processed_knowledge['wiki'])} wiki entries, "
-              f"{len(processed_knowledge['youtube'])} YouTube entries, "
-              f"{len(processed_knowledge['forum'])} forum entries for {game_name}")
+            f"{len(processed_knowledge['youtube'])} YouTube entries, "
+            f"{len(processed_knowledge['forum'])} forum entries for {game_name}")
         
         return processed_knowledge
     

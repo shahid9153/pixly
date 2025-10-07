@@ -17,7 +17,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 try:
-    from backend.knowledge_manager import (
+    from services.knowledge_manager import (
         KnowledgeManager,
         get_available_games,
         process_game_knowledge,

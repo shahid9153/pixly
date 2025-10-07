@@ -2,11 +2,11 @@
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
-from .screenshot import get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats
-from .game_detection import detect_current_game
-from .vector_service import search_knowledge
+from services.screenshot import get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats
+from services.game_detection import detect_current_game
+from services.vector_service import search_knowledge
 import base64
-import json
+
 system_prompt_file = open("PROMPTS.txt","r")
 system_prompt = system_prompt_file.read()
 load_dotenv()

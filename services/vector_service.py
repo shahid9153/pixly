@@ -38,7 +38,7 @@ class VectorService:
             self.chroma_client = None
     
     def _init_embedding_model(self):
-        """Initialize Mistral client for embeddings using API key."""
+        """Initialize the sentence transformer embedder"""
         try:
             # api_key = os.getenv('MISTRAL_API_KEY')
             self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")

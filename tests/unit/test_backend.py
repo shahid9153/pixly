@@ -19,10 +19,10 @@ if project_root not in sys.path:
 try:
     from backend.backend import app
     from backend.chatbot import chat_with_gemini, set_api_key
-    from backend.screenshot import get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats, delete_screenshot
-    from backend.game_detection import detect_current_game, get_available_games as get_detection_games
-    from backend.knowledge_manager import get_available_games as get_csv_games, validate_csv_structure
-    from backend.vector_service import add_game_knowledge, search_knowledge, get_game_stats, list_available_games
+    from services.screenshot import get_recent_screenshots, get_screenshot_by_id, get_screenshot_stats, delete_screenshot
+    from services.game_detection import detect_current_game, get_available_games as get_detection_games
+    from services.knowledge_manager import get_available_games as get_csv_games, validate_csv_structure
+    from services.vector_service import add_game_knowledge, search_knowledge, get_game_stats, list_available_games
 except ImportError as e:
     pytest.skip(f"Backend modules not available: {e}", allow_module_level=True)
 
