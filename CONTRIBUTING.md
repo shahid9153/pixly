@@ -39,14 +39,16 @@ It is highly recommended for contributors to first have a look at the list of ma
 **Frontend+Backend :-**
 1. Chat history is not stored, if you try to follow up gemini with what you asked in the previous chat it will have 0 idea what you are talking about.
 
->[!TIP] Here is a suggested solution: 
+>[!TIP]
+>Here is a suggested solution: 
 Store the chats of the user in a database, (we are already using sqlite for screenshots, might as well use it), then when we give a new prompt to gemini, old chats are added to the prompt. 
 - Only store the last 30 chats or so.
 - Every game will have its own database table, i.e. chats are stored on a per game basis.
 - Additional meta-data such as timestamp should also be stored so when user asked "What did I do yesterday?" it should be able to retrieve the screenshot from 24 hours ago etc.
 
    
->[!Important] UI/UX Addition :
+>[!IMPORTANT]
+> UI/UX Addition :
 - Add the ability to view the stored chats across various sessions/games from the overlay.
 - Add the configuration in the settings menu to read, delete and edit them. 
 - Add a setting to set how many chats per game/session to store.
@@ -54,7 +56,7 @@ Store the chats of the user in a database, (we are already using sqlite for scre
 **Backend :-**
 1. Chroma db vector collections aren't searched properly, this may have to do with the chroma client not being initialised properly or the collections are not being created properly in `get_or_create_collection()` or the incorrect implementation of `search_knowledge()` in *vector_service.py*. This issue requires a more thorough investigation.
 2. Web Scrapper in *knowledge_manager.py* sometimes gets blocked by certain websites, (*namely* the ones present in *minecraft.csv*)
->[!tip] Recommended Solutions :
+>[!TIP] Recommended Solutions :
 - Use Proxies to circumvent IP bans.
 - Rotate a list of User Agents and headers.
 - Make it asynchronous using `asyncio + httpx`
@@ -63,7 +65,8 @@ Store the chats of the user in a database, (we are already using sqlite for scre
 
 
 ## List of Improvements and Suggestions
->[!tip] Feel free to give us any of your ideas, suggestions and feedback to add to this list.
+>[!TIP]
+> Feel free to give us any of your ideas, suggestions and feedback to add to this list.
 
 ### Improvments to the UI
 1. Add Markdown support for Gemini's reponses.
@@ -79,7 +82,8 @@ Store the chats of the user in a database, (we are already using sqlite for scre
 
 1. Add more .csv entries about wikis, guides, youtube videos, forum posts about more games, especially single  player story based titles like `Elden Ring, Hollow Knight : Silksong, Black Myth: Wukong,Cyberpunk 2077`
 2. Implement a Better way to store screenshots:
->[!tip] Suggested Improvemments :
+>[!TIP]
+> Suggested Improvemments :
 - Vectorise the screenshots as well.
 - Add tool calling for the agent to call a tool to retrieve the screenshot from a specific time or from a specific game.
 1. Improve the Web Scrapper :
@@ -96,7 +100,8 @@ Reliance on the win32 api for taking screenshots means we can't transition to a 
 In the future we may wanna add cross platform compatibility with Linux.
 
 ## Other Known Bugs and Issues : 🪲
-> [!important] These are a bit obscure and their causes aren't known yet. 
+> [!IMPORTANT]
+> These are a bit obscure and their causes aren't known yet. 
 1. Overlay hangs and then crashes when turning off the *enable screenshots setting.*
 2. `game_detection.py`, it reports the incorrect game being detected, in some cases.
 3. After adding your API Key from the overlay, sometimes it shows that the user has added their key, sometimes it doesn't.
