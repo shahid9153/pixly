@@ -28,7 +28,7 @@ If you have any questions regarding contributing to this repository please conta
 <!-- (link to the whatsapp group) -->
 ### List of major issues :
 >[!IMPORTANT]
-It is highly recommended for contributors to first have a look at the list of major issues work on them with higher priority.
+> It is highly recommended for contributors to first have a look at the list of major issues work on them with higher priority.
 
 **Related to UI :-**
 1. Make the window resizable and all window elements scalable.
@@ -40,7 +40,7 @@ It is highly recommended for contributors to first have a look at the list of ma
 1. Chat history is not stored, if you try to follow up gemini with what you asked in the previous chat it will have 0 idea what you are talking about.
 
 >[!TIP]
->Here is a suggested solution: 
+> Here is a suggested solution: 
 Store the chats of the user in a database, (we are already using sqlite for screenshots, might as well use it), then when we give a new prompt to gemini, old chats are added to the prompt. 
 - Only store the last 30 chats or so.
 - Every game will have its own database table, i.e. chats are stored on a per game basis.
@@ -56,7 +56,8 @@ Store the chats of the user in a database, (we are already using sqlite for scre
 **Backend :-**
 1. Chroma db vector collections aren't searched properly, this may have to do with the chroma client not being initialised properly or the collections are not being created properly in `get_or_create_collection()` or the incorrect implementation of `search_knowledge()` in *vector_service.py*. This issue requires a more thorough investigation.
 2. Web Scrapper in *knowledge_manager.py* sometimes gets blocked by certain websites, (*namely* the ones present in *minecraft.csv*)
->[!TIP] Recommended Solutions :
+>[!TIP]
+> Recommended Solutions :
 - Use Proxies to circumvent IP bans.
 - Rotate a list of User Agents and headers.
 - Make it asynchronous using `asyncio + httpx`
