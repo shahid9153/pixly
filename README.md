@@ -16,8 +16,9 @@ Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat
 
 Make sure to star our repository, your support is much appreciated.
 
->[!IMPORTANT] 🎃 Hacktoberfest 2025 Participant
-Please make sure to [star this repo](https://github.com/keploy/keploy).
+>[!IMPORTANT]
+> 🎃 Hacktoberfest 2025 Participant
+> Please make sure to [star this repo](https://github.com/keploy/keploy).
 ## 📋 Table of Contents
 
 - [📋 Table of Contents](#-table-of-contents)
