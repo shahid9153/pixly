@@ -21,7 +21,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 try:
-    from backend.screenshot import (
+    from services.screenshot import (
         ScreenshotCapture, 
         start_screenshot_capture, 
         stop_screenshot_capture,

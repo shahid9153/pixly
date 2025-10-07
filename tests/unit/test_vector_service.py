@@ -18,7 +18,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 try:
-    from backend.vector_service import (
+    from services.vector_service import (
         VectorService,
         add_game_knowledge,
         search_knowledge,

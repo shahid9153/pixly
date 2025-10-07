@@ -17,7 +17,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 try:
-    from backend.game_detection import (
+    from services.game_detection import (
         GameDetection,
         detect_current_game,
         add_game_mapping,

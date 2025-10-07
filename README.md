@@ -14,13 +14,15 @@ Pixly - Your AI Gaming Assistant 🎮
 
 Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat with automated, privacy-friendly screenshot capture and a game-specific Retrieval-Augmented Generation (RAG) knowledge base. Pixly detects what game you're playing, retrieves relevant, curated knowledge (wikis, user-supplied YouTube descriptions, and forum posts) via a local vector database, and grounds Gemini responses on those sources.
 
-**🎃 Hacktoberfest 2025 Participant** | Join us in making gaming more accessible with AI! Also make sure to [star this repo](https://github.com/keploy/keploy).
+Make sure to star our repository, your support is much appreciated.
+
+>[!important] 🎃 Hacktoberfest 2025 Participant
+Please make sure to [star this repo](https://github.com/keploy/keploy).
 ## 📋 Table of Contents
 
 - [📋 Table of Contents](#-table-of-contents)
-- [🎮 What Pixly Does](#-what-pixly-does)
 - [🤝 Contributing, Setup and Install](#-contributing-setup-and-install)
-  - [🎃 Hacktoberfest 2025 - How to Contribute](#-hacktoberfest-2025---how-to-contribute)
+- [🎮 What Pixly Does](#-what-pixly-does)
 - [🏗️ Architecture Overview](#️-architecture-overview)
   - [1) UI Overlay (`overlay.py`)](#1-ui-overlay-overlaypy)
   - [2) Backend API (`backend/`)](#2-backend-api-backend)
@@ -35,6 +37,14 @@ Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat
 - [📄 License](#-license)
 - [🙏 Acknowledgments](#-acknowledgments)
 
+## 🤝 Contributing, Setup and Install
+
+**We welcome Hacktoberfest 2025 contributors!** Whether you're adding new games to the knowledge base, improving the UI, or enhancing AI capabilities, your contributions matter.
+
+- 📖 For Contributing Visit [CONTRIBUTING.md](https://github.com/MLSAKIIT/pixly/blob/main/CONTRIBUTING.md)
+- ⚙️ For Setup and Installation visit [INSTALL.md](https://github.com/MLSAKIIT/pixly/blob/main/INSTALL.md)
+
+
 ## 🎮 What Pixly Does
 
 - 🤖 Intelligent, game-focused chat using Google Gemini with a "Game Expert" system prompt
@@ -43,24 +53,6 @@ Pixly is a desktop overlay that acts as your gaming assistant, combining AI chat
 - 🔍 RAG pipeline over per-game CSV knowledge with local vector search (Chroma)
 - 💻 Modern desktop overlay for chatting, settings, and screenshot gallery
 
-## 🤝 Contributing, Setup and Install
-
-**We welcome Hacktoberfest 2025 contributors!** Whether you're adding new games to the knowledge base, improving the UI, or enhancing AI capabilities, your contributions matter.
-
-- 📖 For Contributing Visit [CONTRIBUTING.md](https://github.com/MLSAKIIT/pixly/blob/main/CONTRIBUTING.md)
-- ⚙️ For Setup and Installation visit [INSTALL.md](https://github.com/MLSAKIIT/pixly/blob/main/INSTALL.md)
-
-### 🎃 Hacktoberfest 2025 - How to Contribute
-
-This project is participating in **Hacktoberfest 2025**! Here are some ways you can contribute:
-
-1. **Add Game Knowledge**: Contribute CSV files with game wikis, YouTube videos, and forum links
-2. **Improve Documentation**: Enhance README, add tutorials, or create guides
-3. **Fix Bugs**: Check our issues and help resolve reported bugs
-4. **Add Features**: Implement new features like support for more games or UI improvements
-5. **Optimize Performance**: Improve RAG retrieval, vector search, or screenshot handling
-
-**Note**: Make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md) and contribution guidelines!
 
 ## 🏗️ Architecture Overview
 
@@ -150,20 +142,29 @@ The detection result is passed into the RAG layer to scope retrieval to the acti
 ## 📁 Project Structure
 
 ```
-Hacktober Fest/
-├── backend/
-│   ├── __init__.py               # FastAPI app initialization
-│   ├── backend.py                # API endpoints and routing
+pixly/
+├── backend/             
+│   ├── backend.py                # FastAPI app initialization
+├── routers/                      # Contains all the API Routers
+|   ├── chat.py                   # Stores chat endpoints
+|   ├── game_detection.py         # Stores game detection and vector search endpoints
+|   ├── screenshot.py             # Stores screenshot endpoints
+|   ├── setting.py                # Stores settings endpoints
+├── services/                     # Contains all the backend services.
 │   ├── chatbot.py                # Gemini integration, RAG-aware chat, runtime reconfigure
 │   ├── screenshot.py             # Encrypted screenshot capture, DB ops, delete support
 │   ├── game_detection.py         # Process/message/screenshot-based game detection
 │   ├── knowledge_manager.py      # CSV ingestion and content extraction (wiki/forum)
 │   └── vector_service.py         # Chroma collections, embeddings, and search
+├── schemas/                      # Contains the schemas for the various requests
+|   ├── chat.py
+|   ├── game_detection.py
+|   ├── knowledge_search.py
+|   ├── settings.py
 ├── overlay.py                    # CustomTkinter overlay (chat, settings, screenshot viewer)
 ├── games_info/                   # Per-game CSVs (e.g., minecraft.csv)
 ├── vector_db/                    # Chroma persistent storage
 ├── PROMPTS.txt                   # System persona + RAG grounding instructions
-├── test_system.py                # Local API test harness
 ├── run.py                        # Backend server launcher
 ├── pyproject.toml                # Dependencies and metadata
 ├── screenshots.db                # Encrypted screenshot database (auto-created)
